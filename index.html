@@ -393,11 +393,14 @@ const CRICKETERS = [
 const seen = new Set();
 const PLAYERS = CRICKETERS.filter(c => { if(seen.has(c.name)){return false;} seen.add(c.name); return true; });
 
+const DAY_STAMP = Math.floor(new Date().getTime() / 86400000);
+const STORAGE_KEY = "cricket-hot-cold:daily-state:v1";
+
 function getTodayIndex() {
-  return Math.floor(new Date().getTime() / 86400000) % PLAYERS.length;
+  return DAY_STAMP % PLAYERS.length;
 }
 const SECRET = PLAYERS[getTodayIndex()];
-const DAY_NUM = Math.floor(new Date().getTime() / 86400000) % 9999;
+const DAY_NUM = DAY_STAMP % 9999;
 
 document.getElementById("dayBadge").textContent = "🏏 Cricket Hot & Cold #" + DAY_NUM;
 
@@ -429,6 +432,56 @@ function similarity(a, b) {
   return Math.min(score, 99);
 }
 
+function buildGuess(player) {
+  const isCorrect = player.name === SECRET.name;
+  return {
+    name: player.name,
+    country: player.country,
+    sim: isCorrect ? 100 : similarity(player, SECRET),
+    isCorrect,
+  };
+}
+
+function saveGame() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      dayStamp: DAY_STAMP,
+      secret: SECRET.name,
+      guesses: guesses.map(g => g.name),
+      won,
+    }));
+  } catch (err) {
+    // Some browsers disable storage in private or locked-down contexts.
+  }
+}
+
+function loadGame() {
+  let saved;
+  try {
+    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch (err) {
+    return;
+  }
+
+  if (!saved || saved.dayStamp !== DAY_STAMP || saved.secret !== SECRET.name || !Array.isArray(saved.guesses)) {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
+    return;
+  }
+
+  const restoredNames = new Set();
+  guesses = saved.guesses.reduce((restored, name) => {
+    const player = PLAYERS.find(c => c.name === name);
+    if (!player || restoredNames.has(player.name)) return restored;
+    restoredNames.add(player.name);
+    restored.push(buildGuess(player));
+    return restored;
+  }, []);
+
+  won = guesses.some(g => g.isCorrect);
+  if (guesses.length) render();
+  if (won) showWin();
+}
+
 function makeGuess() {
   if (won) return;
   const input = document.getElementById("guessInput");
@@ -441,13 +494,13 @@ function makeGuess() {
   if (guesses.find(g => g.name.toLowerCase() === found.name.toLowerCase())) {
     err.textContent = "Already guessed! Try a different cricketer."; return;
   }
-  const isCorrect = found.name === SECRET.name;
-  const sim = isCorrect ? 100 : similarity(found, SECRET);
-  guesses.unshift({ name: found.name, country: found.country, sim, isCorrect });
+  const guess = buildGuess(found);
+  guesses.unshift(guess);
   input.value = "";
   document.getElementById("dropdown").style.display = "none";
   render();
-  if (isCorrect) showWin();
+  if (guess.isCorrect) showWin();
+  saveGame();
 }
 
 function render() {
@@ -523,6 +576,7 @@ function selectPlayer(name) {
   document.getElementById("dropdown").style.display = "none";
 }
 document.addEventListener("click", e => { if (!e.target.closest(".autocomplete")) document.getElementById("dropdown").style.display = "none"; });
+loadGame();
 </script>
 </body>
 </html>
