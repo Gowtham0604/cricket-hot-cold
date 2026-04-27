@@ -29,41 +29,133 @@
   </script>
   <style type="text/tailwindcss">
     @layer base {
+      html {
+        color-scheme: dark;
+      }
+
       * {
         box-sizing: border-box;
       }
 
       body {
-        @apply min-h-screen bg-pitch-950 text-slate-100 antialiased;
+        @apply min-h-screen bg-pitch-950 text-slate-100 antialiased selection:bg-amber-300/30 selection:text-white;
         background-image:
-          linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(2, 6, 23, 0.98) 100%),
-          linear-gradient(120deg, rgba(251, 191, 36, 0.08) 0%, rgba(56, 189, 248, 0.06) 45%, rgba(251, 113, 133, 0.08) 100%);
+          radial-gradient(circle at top, rgba(34, 211, 238, 0.12), transparent 30%),
+          radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.14), transparent 28%),
+          linear-gradient(180deg, #040816 0%, #07111f 34%, #07131f 62%, #050914 100%);
       }
 
       strong {
         @apply font-semibold text-white;
       }
+
+      #winBox:empty {
+        display: none;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 50% -8%, rgba(255, 255, 255, 0.16), transparent 18%),
+          radial-gradient(circle at 15% 12%, rgba(56, 189, 248, 0.08), transparent 22%),
+          radial-gradient(circle at 84% 16%, rgba(251, 191, 36, 0.08), transparent 18%);
+        mix-blend-mode: screen;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        left: 50%;
+        bottom: -18rem;
+        width: min(94rem, 160vw);
+        height: 38rem;
+        transform: translateX(-50%);
+        pointer-events: none;
+        border-radius: 9999px;
+        background:
+          radial-gradient(circle at 50% 20%, rgba(34, 197, 94, 0.22), transparent 46%),
+          linear-gradient(180deg, rgba(34, 197, 94, 0), rgba(13, 148, 136, 0.12));
+        filter: blur(36px);
+        opacity: 0.7;
+      }
     }
 
     @layer components {
-      .panel {
-        @apply relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.06] shadow-panel backdrop-blur-xl;
+      .hero-shell {
+        @apply relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] px-5 py-6 shadow-panel backdrop-blur-2xl sm:px-8 sm:py-8;
       }
 
-      .stat-card {
-        @apply rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-4 shadow-lg shadow-black/10;
+      .hero-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 80% 18%, rgba(251, 191, 36, 0.18), transparent 22%),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.09), transparent 38%);
+      }
+
+      .hero-crest {
+        @apply relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950/35 p-5;
+      }
+
+      .hero-crest::before {
+        content: "";
+        position: absolute;
+        inset: 1rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .hero-crest::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -5rem;
+        width: 18rem;
+        height: 18rem;
+        transform: translateX(-50%);
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .section-band {
+        @apply border-t border-white/10 py-6;
+      }
+
+      .metric-segment {
+        @apply border-white/10 px-0 py-3 md:px-5;
+      }
+
+      .metric-segment + .metric-segment {
+        @apply border-t md:border-l md:border-t-0;
+      }
+
+      .input-shell {
+        @apply relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950/55 p-4 shadow-2xl shadow-black/20;
+      }
+
+      .input-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(90deg, rgba(251, 191, 36, 0.08), transparent 32%, rgba(34, 211, 238, 0.08));
       }
 
       .scale-item {
-        @apply flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-xl opacity-40 transition duration-300;
+        @apply flex h-14 w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-xl opacity-40 transition duration-300;
       }
 
       .scale-item.active {
-        @apply scale-110 border-amber-300/60 bg-amber-300/15 opacity-100 shadow-lg shadow-amber-500/20;
+        @apply scale-[1.02] border-amber-300/60 bg-amber-300/15 opacity-100 shadow-lg shadow-amber-500/20;
       }
 
       .hint-shell {
-        @apply rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-4 text-sm leading-6 text-amber-50;
+        @apply rounded-[1.5rem] border border-amber-300/20 bg-amber-300/10 px-5 py-4 text-sm leading-6 text-amber-50;
       }
 
       .dropdown-panel {
@@ -79,7 +171,7 @@
       }
 
       .guess-row {
-        @apply flex items-center gap-4 rounded-2xl border px-4 py-4 shadow-lg shadow-black/10;
+        @apply flex items-center gap-4 rounded-[1.5rem] border px-4 py-4 shadow-lg shadow-black/10;
         animation: rise-in 220ms ease;
       }
 
@@ -116,11 +208,11 @@
       }
 
       .primary-button {
-        @apply inline-flex items-center justify-center rounded-2xl border border-amber-300/40 bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-orange-500/20 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-amber-200/70 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
+        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-amber-200/60 bg-gradient-to-r from-amber-200 via-amber-300 to-orange-400 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-orange-500/20 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-amber-200/70 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
       }
 
       .secondary-button {
-        @apply inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-white/30;
+        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-white/30;
       }
 
       .eyebrow {
@@ -130,6 +222,18 @@
       .info-chip {
         @apply rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-medium text-slate-200;
       }
+
+      .side-rule {
+        @apply flex items-start justify-between gap-4 border-t border-white/10 py-4;
+      }
+
+      .side-rule:first-child {
+        @apply border-t-0 pt-0;
+      }
+
+      .micro-kicker {
+        @apply text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-slate-500;
+      }
     }
 
     @layer utilities {
@@ -137,8 +241,15 @@
         background-image:
           linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
           linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
-        background-size: 28px 28px;
+        background-size: 36px 36px;
         background-position: -1px -1px;
+      }
+
+      .field-lines {
+        background:
+          radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+          radial-gradient(circle at 50% 58%, transparent 0 6rem, rgba(255, 255, 255, 0.08) 6rem, rgba(255, 255, 255, 0.08) 6.08rem, transparent 6.08rem),
+          radial-gradient(circle at 50% 58%, transparent 0 11rem, rgba(255, 255, 255, 0.06) 11rem, rgba(255, 255, 255, 0.06) 11.08rem, transparent 11.08rem);
       }
     }
 
@@ -156,186 +267,263 @@
   </style>
 </head>
 <body>
-  <main class="mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 py-8 sm:px-6 lg:px-8">
-    <div class="grid w-full gap-6 lg:grid-cols-[minmax(0,1.08fr)_24rem]">
-      <section class="panel glass-grid p-5 sm:p-8">
-        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/80 to-transparent"></div>
-        <div class="flex flex-col gap-6">
-          <header class="flex flex-col gap-5">
-            <div class="flex flex-wrap items-center gap-3">
-              <div
-                id="dayBadge"
-                class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-200"
-              >
-                <span>🏏</span>
-                <span>Cricket Hot &amp; Cold</span>
+  <main class="relative mx-auto min-h-screen w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+    <section class="hero-shell glass-grid field-lines">
+      <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_23rem] lg:gap-10">
+        <div class="space-y-8">
+          <div class="flex flex-wrap items-center gap-3">
+            <div
+              id="dayBadge"
+              class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-200"
+            >
+              <span>🏏</span>
+              <span>Cricket Hot &amp; Cold</span>
+            </div>
+            <div class="info-chip">Daily board</div>
+            <div class="info-chip">One secret player</div>
+          </div>
+
+          <div class="space-y-4">
+            <p class="eyebrow">Editorial Cricket Puzzle</p>
+            <h1 class="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+              A sharper daily guessing game for people who actually watch cricket.
+            </h1>
+            <p class="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+              Every guess reveals real signal. Country, role, era, batting hand, and format affinity all move the
+              temperature, so the board feels less random and more like a proper read of the sport.
+            </p>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_17rem]">
+            <div class="input-shell">
+              <div class="relative z-10">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div class="micro-kicker">Player Search</div>
+                    <div class="mt-1 text-sm text-slate-300" id="statusText">Open with your first guess.</div>
+                  </div>
+                  <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Enter to submit</div>
+                </div>
+
+                <div id="errMsg" class="mt-4 min-h-5 text-sm text-rose-300"></div>
+                <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+                  <div class="autocomplete relative flex-1">
+                    <label for="guessInput" class="sr-only">Guess a cricketer</label>
+                    <input
+                      type="text"
+                      id="guessInput"
+                      placeholder="e.g. Virat Kohli, Joe Root..."
+                      autocomplete="off"
+                      class="w-full rounded-[1.1rem] border border-white/10 bg-white/[0.07] px-4 py-4 pr-12 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/50 focus:bg-white/[0.10] focus:ring-2 focus:ring-amber-200/20"
+                    />
+                    <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-500">⌕</div>
+                    <div id="dropdown" class="dropdown-panel hidden"></div>
+                  </div>
+                  <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Make Guess</button>
+                </div>
+                <p class="mt-3 text-xs text-slate-400">
+                  Autocomplete opens after two letters. Press Enter to stay in flow.
+                </p>
               </div>
-              <div class="info-chip">Daily challenge</div>
-              <div class="info-chip">Single-player</div>
             </div>
 
-            <div class="space-y-3">
-              <p class="eyebrow">Premium Cricket Puzzle</p>
-              <h1 class="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Guess the cricketer before the board catches fire.
-              </h1>
-              <p class="max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-                Search any international player. Each guess reveals how close you are through country, role,
-                era, batting hand, and overall heat.
-              </p>
-            </div>
-          </header>
-
-          <div class="grid gap-3 sm:grid-cols-3">
-            <div class="stat-card">
-              <div class="eyebrow">Guesses</div>
-              <div class="mt-2 text-3xl font-semibold text-white" id="guessCount">0</div>
-            </div>
-            <div class="stat-card">
-              <div class="eyebrow">Best Read</div>
-              <div class="mt-2 text-3xl font-semibold text-white" id="bestScore">—</div>
-            </div>
-            <div class="stat-card">
-              <div class="eyebrow">Current Heat</div>
-              <div class="mt-2 flex items-center gap-3">
-                <span class="text-3xl" id="tempDisplay">🧊</span>
+            <div class="hero-crest">
+              <div class="relative z-10 flex h-full flex-col justify-between gap-6">
                 <div>
-                  <div class="text-lg font-semibold text-white" id="tempLabel">Freezing</div>
-                  <div class="text-xs text-slate-400">Latest guess state</div>
+                  <div class="micro-kicker">Current Heat</div>
+                  <div class="mt-3 flex items-end gap-3">
+                    <span class="text-5xl leading-none" id="tempDisplay">🧊</span>
+                    <div>
+                      <div class="text-2xl font-semibold text-white" id="tempLabel">Freezing</div>
+                      <div class="mt-1 text-sm text-slate-400">Latest guess state</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Board Tempo</div>
+                  <div class="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                  <div class="text-sm leading-6 text-slate-300">
+                    Precision matters more than volume once the board turns warm.
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <section class="rounded-3xl border border-white/10 bg-slate-950/35 p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <div class="eyebrow">Heat Meter</div>
-                <div class="mt-1 text-sm text-slate-300" id="statusText">Open with your first guess.</div>
+        <aside class="flex flex-col justify-between gap-8">
+          <div class="space-y-5">
+            <div class="micro-kicker">Today&apos;s Dossier</div>
+            <div class="space-y-4 border-t border-white/10 pt-5">
+              <div class="side-rule">
+                <div>
+                  <div class="text-sm font-medium text-white">Hint Progress</div>
+                  <div class="mt-1 text-sm text-slate-400">Clues unlock in measured steps.</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-semibold text-white" id="hintLevel">1 / 5</div>
+                </div>
               </div>
-              <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Freezing to Volcanic</div>
-            </div>
-
-            <div class="mt-4 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
-              <span class="scale-item" title="Freezing">🧊</span>
-              <span class="scale-item" title="Cold">🌬️</span>
-              <span class="scale-item" title="Cool">💧</span>
-              <span class="scale-item" title="Warm">☀️</span>
-              <span class="scale-item" title="Hot">🌶️</span>
-              <span class="scale-item" title="Burning">🔥</span>
-              <span class="scale-item" title="Volcanic">🌋</span>
-            </div>
-
-            <div class="mt-5 overflow-hidden rounded-full bg-white/[0.08]">
-              <div
-                id="heatBar"
-                class="h-2.5 w-0 rounded-full bg-gradient-to-r from-sky-400 via-amber-300 to-rose-400 transition-all duration-500"
-              ></div>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
-              <span>0%</span>
-              <span>100%</span>
-            </div>
-          </section>
-
-          <section>
-            <div id="errMsg" class="min-h-5 text-sm text-rose-300"></div>
-            <div class="mt-2 flex flex-col gap-3 sm:flex-row">
-              <div class="autocomplete relative flex-1">
-                <label for="guessInput" class="sr-only">Guess a cricketer</label>
-                <input
-                  type="text"
-                  id="guessInput"
-                  placeholder="e.g. Virat Kohli, Joe Root..."
-                  autocomplete="off"
-                  class="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-4 pr-12 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/50 focus:bg-white/[0.10] focus:ring-2 focus:ring-amber-200/20"
-                />
-                <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-500">⌕</div>
-                <div id="dropdown" class="dropdown-panel hidden"></div>
+              <div class="side-rule">
+                <div>
+                  <div class="text-sm font-medium text-white">Player Pool</div>
+                  <div class="mt-1 text-sm text-slate-400">International names only.</div>
+                </div>
+                <div class="text-right text-2xl font-semibold text-white" id="playerPool">0</div>
               </div>
-              <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Make Guess</button>
+              <div class="side-rule">
+                <div>
+                  <div class="text-sm font-medium text-white">Best Read</div>
+                  <div class="mt-1 text-sm text-slate-400">Your hottest line so far.</div>
+                </div>
+                <div class="text-right text-2xl font-semibold text-white" id="sideBestScore">—</div>
+              </div>
             </div>
-            <p class="mt-3 text-xs text-slate-400">Autocomplete opens after two letters. Press Enter to submit.</p>
-          </section>
+          </div>
 
+          <div class="space-y-5">
+            <div class="micro-kicker">Heat Model</div>
+            <div class="flex flex-wrap gap-2">
+              <span class="info-chip">Country</span>
+              <span class="info-chip">Role</span>
+              <span class="info-chip">Era</span>
+              <span class="info-chip">Batting hand</span>
+              <span class="info-chip">Format</span>
+              <span class="info-chip">Career shape</span>
+            </div>
+            <p class="text-sm leading-7 text-slate-300">
+              The board rewards structural closeness, so thoughtful guesses surface better clues than random legends.
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      <div class="relative z-10 mt-8 grid gap-2 border-t border-white/10 pt-5 md:grid-cols-3 md:gap-0">
+        <div class="metric-segment">
+          <div class="micro-kicker">Guesses</div>
+          <div class="mt-2 text-4xl font-semibold text-white" id="guessCount">0</div>
+        </div>
+        <div class="metric-segment">
+          <div class="micro-kicker">Best Read</div>
+          <div class="mt-2 text-4xl font-semibold text-white" id="bestScore">—</div>
+        </div>
+        <div class="metric-segment">
+          <div class="micro-kicker">Board Feed</div>
+          <div class="mt-2 text-sm leading-7 text-slate-300" id="latestGuessMeta">No guesses yet.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <section class="min-w-0">
+        <section class="section-band pt-0">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div class="eyebrow">Temperature Rail</div>
+              <h2 class="mt-2 text-2xl font-semibold text-white">Read the board, then narrow your lane.</h2>
+            </div>
+            <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Freezing to Volcanic</div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
+            <span class="scale-item" title="Freezing">🧊</span>
+            <span class="scale-item" title="Cold">🌬️</span>
+            <span class="scale-item" title="Cool">💧</span>
+            <span class="scale-item" title="Warm">☀️</span>
+            <span class="scale-item" title="Hot">🌶️</span>
+            <span class="scale-item" title="Burning">🔥</span>
+            <span class="scale-item" title="Volcanic">🌋</span>
+          </div>
+
+          <div class="mt-5 overflow-hidden rounded-full bg-white/[0.08]">
+            <div
+              id="heatBar"
+              class="h-3 w-0 rounded-full bg-gradient-to-r from-sky-400 via-amber-300 to-rose-400 transition-all duration-500"
+            ></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
+            <span>0%</span>
+            <span>100%</span>
+          </div>
+        </section>
+
+        <section class="section-band">
           <div class="hint-shell" id="hintBox">
             <strong>Hint:</strong> A famous international cricketer is hiding here.
           </div>
+        </section>
 
-          <section class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <div class="eyebrow">Guess Board</div>
-                <div class="mt-1 text-sm text-slate-300">Closest guesses float to the top.</div>
-              </div>
-              <div class="text-xs text-slate-400" id="latestGuessMeta">No guesses yet.</div>
+        <section class="section-band">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div class="eyebrow">Guess Board</div>
+              <h2 class="mt-2 text-2xl font-semibold text-white">Every guess should teach you something.</h2>
             </div>
-            <div
-              id="emptyState"
-              class="rounded-2xl border border-dashed border-white/10 bg-white/[0.03] px-5 py-10 text-center text-sm text-slate-400"
-            >
-              Your board is empty. Start with any international cricketer you know.
-            </div>
-            <div id="guessList" class="space-y-3"></div>
-          </section>
+            <div class="text-sm text-slate-400">Closest guesses float to the top.</div>
+          </div>
 
-          <div id="winBox"></div>
+          <div
+            id="emptyState"
+            class="mt-6 rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.03] px-6 py-12 text-center text-sm text-slate-400"
+          >
+            Your board is empty. Start with any international cricketer you know.
+          </div>
+          <div id="guessList" class="mt-6 space-y-3"></div>
+        </section>
 
-          <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-slate-500">
-            <span>New cricketer every day</span>
-            <span>Made for cricket fans who like a little drama</span>
-          </footer>
-        </div>
+        <div id="winBox" class="section-band"></div>
+
+        <footer class="section-band flex flex-wrap items-center justify-between gap-3 pb-0 text-xs text-slate-500">
+          <span>New cricketer every day</span>
+          <span>Built for cricket fans who like a little theatre in their puzzle games</span>
+        </footer>
       </section>
 
-      <aside class="flex flex-col gap-6">
-        <section class="panel p-5">
-          <div class="eyebrow">Today&apos;s Board</div>
-          <div class="mt-3 space-y-4">
-            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-              <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Hint Level</div>
-              <div class="mt-2 text-2xl font-semibold text-white" id="hintLevel">1 / 5</div>
-              <div class="mt-1 text-sm text-slate-400">Fresh clues unlock as you keep probing.</div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-                <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Player Pool</div>
-                <div class="mt-2 text-2xl font-semibold text-white" id="playerPool">0</div>
+      <aside class="space-y-8">
+        <section class="section-band pt-0">
+          <div class="eyebrow">How To Hunt</div>
+          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-300">
+            <div class="side-rule">
+              <div>
+                <div class="text-sm font-medium text-white">Start Broad</div>
+                <div class="mt-1 text-slate-400">Lead with an active star to test country and era quickly.</div>
               </div>
-              <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-                <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Best Heat</div>
-                <div class="mt-2 text-2xl font-semibold text-white" id="sideBestScore">—</div>
+            </div>
+            <div class="side-rule">
+              <div>
+                <div class="text-sm font-medium text-white">Then Pivot</div>
+                <div class="mt-1 text-slate-400">When the board gets warm, shift by role before you chase exact names.</div>
+              </div>
+            </div>
+            <div class="side-rule">
+              <div>
+                <div class="text-sm font-medium text-white">Finish Clean</div>
+                <div class="mt-1 text-slate-400">A hot signal is usually about archetype before it becomes identity.</div>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="panel p-5">
-          <div class="eyebrow">How Heat Works</div>
-          <div class="mt-3 space-y-3 text-sm leading-6 text-slate-300">
-            <p>The board rewards structural similarity, not just fame.</p>
-            <div class="flex flex-wrap gap-2">
-              <span class="info-chip">Country match</span>
-              <span class="info-chip">Role match</span>
-              <span class="info-chip">Era match</span>
-              <span class="info-chip">Batting hand</span>
-              <span class="info-chip">Format overlap</span>
-              <span class="info-chip">Career volume</span>
+        <section class="section-band">
+          <div class="eyebrow">Board Notes</div>
+          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-300">
+            <div class="side-rule">
+              <div>
+                <div class="text-sm font-medium text-white">One puzzle per day</div>
+                <div class="mt-1 text-slate-400">Your progress persists locally for the current board.</div>
+              </div>
             </div>
-          </div>
-        </section>
-
-        <section class="panel p-5">
-          <div class="eyebrow">Strategy</div>
-          <div class="mt-3 space-y-4 text-sm text-slate-300">
-            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-              Start broad with a famous active player to learn the country and era quickly.
+            <div class="side-rule">
+              <div>
+                <div class="text-sm font-medium text-white">Signal over chaos</div>
+                <div class="mt-1 text-slate-400">The board is tuned to reward informed cricket intuition.</div>
+              </div>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-              When the board gets warm, pivot by role before you narrow to a specific name.
-            </div>
-            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-              Use the share trail after a win to flex your read on the room.
+            <div class="side-rule">
+              <div>
+                <div class="text-sm font-medium text-white">Share the path</div>
+                <div class="mt-1 text-slate-400">Once solved, copy your trail and show how tidy the read was.</div>
+              </div>
             </div>
           </div>
         </section>
@@ -731,15 +919,21 @@
     function showWin() {
       won = true;
       document.getElementById("winBox").innerHTML = `
-        <div class="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.08] p-6 text-center shadow-lg shadow-emerald-900/20">
-          <div class="text-4xl">🏆</div>
-          <div class="mt-4 text-2xl font-semibold text-white">You got it — ${escapeHtml(SECRET.name)}!</div>
-          <div class="mt-2 text-sm text-emerald-100/80">
-            Solved in ${guesses.length} guess${guesses.length === 1 ? "" : "es"} • ${escapeHtml(SECRET.country)}
+        <div class="overflow-hidden rounded-[1.75rem] border border-emerald-400/20 bg-gradient-to-br from-emerald-400/[0.14] via-emerald-400/[0.06] to-cyan-400/[0.08] p-6 shadow-2xl shadow-emerald-950/20">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div class="micro-kicker text-emerald-200/70">Board Solved</div>
+              <div class="mt-3 text-3xl font-semibold text-white">You got it — ${escapeHtml(SECRET.name)}!</div>
+              <div class="mt-2 text-sm leading-7 text-emerald-100/80">
+                Solved in ${guesses.length} guess${guesses.length === 1 ? "" : "es"} • ${escapeHtml(SECRET.country)}
+              </div>
+            </div>
+            <div class="text-5xl">🏆</div>
           </div>
-          <div class="mt-4 break-all text-2xl tracking-[0.3em] text-white">${getTrail()}</div>
+          <div class="mt-5 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+          <div class="mt-5 break-all text-2xl tracking-[0.3em] text-white">${getTrail()}</div>
           <div class="mt-3 min-h-5 text-sm text-emerald-200" id="copiedMsg"></div>
-          <div class="mt-5 flex flex-wrap justify-center gap-3">
+          <div class="mt-5 flex flex-wrap gap-3">
             <button class="secondary-button" onclick="shareResult()">Copy Result</button>
           </div>
         </div>
