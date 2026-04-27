@@ -1,582 +1,840 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cricket Hot & Cold — Guess the Cricketer</title>
-  <meta name="description" content="Daily cricket guessing game. Guess the secret international cricketer — get hotter or colder with each guess!" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f5f5f0;
-      color: #1a1a1a;
-      min-height: 100vh;
-    }
-    #game {
-      max-width: 580px;
-      margin: 0 auto;
-      padding: 2rem 1rem 4rem;
-    }
-    /* HEADER */
-    .header { text-align: center; margin-bottom: 1.5rem; }
-    .day-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      color: #666;
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 20px;
-      padding: 4px 14px;
-      margin-bottom: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .title { font-size: 28px; font-weight: 700; color: #111; letter-spacing: -0.5px; }
-    .subtitle { font-size: 13px; color: #888; margin-top: 5px; }
+  <meta
+    name="description"
+    content="Daily cricket guessing game. Guess the secret international cricketer and get hotter or colder with each try."
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pitch: {
+              950: "#07111f",
+              900: "#0a1628",
+              800: "#132238"
+            }
+          },
+          boxShadow: {
+            panel: "0 24px 80px rgba(2, 6, 23, 0.45)"
+          }
+        }
+      }
+    };
+  </script>
+  <style type="text/tailwindcss">
+    @layer base {
+      * {
+        box-sizing: border-box;
+      }
 
-    /* EMOJI SCALE */
-    .temp-scale {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 1.25rem 0;
-      font-size: 22px;
-    }
-    .temp-scale span {
-      opacity: 0.25;
-      transition: opacity 0.4s, transform 0.4s;
-      display: inline-block;
-      cursor: default;
-    }
-    .temp-scale span.active { opacity: 1; transform: scale(1.6); }
+      body {
+        @apply min-h-screen bg-pitch-950 text-slate-100 antialiased;
+        background-image:
+          linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(2, 6, 23, 0.98) 100%),
+          linear-gradient(120deg, rgba(251, 191, 36, 0.08) 0%, rgba(56, 189, 248, 0.06) 45%, rgba(251, 113, 133, 0.08) 100%);
+      }
 
-    /* STATS */
-    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1rem; }
-    .stat-card {
-      background: #fff;
-      border-radius: 10px;
-      border: 1px solid #e8e8e8;
-      padding: 10px 12px;
-      text-align: center;
+      strong {
+        @apply font-semibold text-white;
+      }
     }
-    .stat-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.06em; }
-    .stat-val { font-size: 22px; font-weight: 700; color: #111; margin-top: 2px; }
 
-    /* ERROR */
-    .error-msg { font-size: 13px; color: #c0392b; margin-bottom: 6px; min-height: 18px; }
+    @layer components {
+      .panel {
+        @apply relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.06] shadow-panel backdrop-blur-xl;
+      }
 
-    /* INPUT */
-    .input-row { display: flex; gap: 8px; margin-bottom: 1rem; }
-    .autocomplete { position: relative; flex: 1; }
-    .autocomplete input {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid #ddd;
-      border-radius: 10px;
-      font-size: 15px;
-      background: #fff;
-      color: #111;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .autocomplete input:focus { border-color: #111; }
-    .dropdown {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      z-index: 100;
-      overflow: hidden;
-      max-height: 220px;
-      overflow-y: auto;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    }
-    .dropdown div {
-      padding: 9px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      color: #111;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .dropdown div:hover { background: #f5f5f0; }
-    .dropdown .dc { font-size: 11px; color: #999; }
-    .guess-btn {
-      padding: 11px 22px;
-      border-radius: 10px;
-      border: 1.5px solid #111;
-      background: #111;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s;
-    }
-    .guess-btn:hover { background: #333; }
+      .stat-card {
+        @apply rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-4 shadow-lg shadow-black/10;
+      }
 
-    /* HINT */
-    .hint-box {
-      background: #fff;
-      border-radius: 10px;
-      padding: 10px 14px;
-      margin-bottom: 1rem;
-      font-size: 13px;
-      color: #666;
-      border-left: 3px solid #f39c12;
-    }
-    .hint-box strong { color: #111; }
+      .scale-item {
+        @apply flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-xl opacity-40 transition duration-300;
+      }
 
-    /* GUESSES */
-    .guesses-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 1rem; }
-    .guess-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid #e8e8e8;
-      background: #fff;
-      animation: slideIn 0.3s ease;
-    }
-    @keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
-    .guess-emoji { font-size: 24px; min-width: 34px; text-align: center; }
-    .guess-name { flex: 1; font-size: 14px; font-weight: 600; color: #111; }
-    .guess-country { font-size: 11px; color: #999; font-weight: 400; display: block; margin-top: 1px; }
-    .guess-pct { font-size: 13px; color: #888; min-width: 38px; text-align: right; font-weight: 500; }
+      .scale-item.active {
+        @apply scale-110 border-amber-300/60 bg-amber-300/15 opacity-100 shadow-lg shadow-amber-500/20;
+      }
 
-    /* WIN */
-    .win-box {
-      background: #fff;
-      border-radius: 14px;
-      padding: 1.75rem;
-      text-align: center;
-      border: 1px solid #e8e8e8;
-      margin-top: 8px;
-    }
-    .win-title { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 4px; }
-    .win-sub { font-size: 13px; color: #888; }
-    .emoji-trail { font-size: 22px; margin: 12px 0; letter-spacing: 3px; word-break: break-all; }
-    .share-row { margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-    .share-btn {
-      padding: 10px 22px;
-      border-radius: 10px;
-      border: 1.5px solid #111;
-      background: #111;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .share-btn:hover { background: #333; }
-    .copied-msg { font-size: 12px; color: #27ae60; margin-top: 8px; min-height: 16px; }
+      .hint-shell {
+        @apply rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-4 text-sm leading-6 text-amber-50;
+      }
 
-    /* FOOTER */
-    .footer { text-align: center; margin-top: 2rem; font-size: 12px; color: #bbb; }
+      .dropdown-panel {
+        @apply absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 max-h-72 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-black/40 backdrop-blur-xl;
+      }
+
+      .dropdown-item {
+        @apply flex w-full items-center justify-between gap-4 border-b border-white/5 px-4 py-3 text-left transition hover:bg-white/[0.08];
+      }
+
+      .dropdown-item:last-child {
+        @apply border-b-0;
+      }
+
+      .guess-row {
+        @apply flex items-center gap-4 rounded-2xl border px-4 py-4 shadow-lg shadow-black/10;
+        animation: rise-in 220ms ease;
+      }
+
+      .guess-tier-0 {
+        @apply border-sky-500/20 bg-sky-500/[0.08];
+      }
+
+      .guess-tier-1 {
+        @apply border-cyan-400/20 bg-cyan-400/[0.08];
+      }
+
+      .guess-tier-2 {
+        @apply border-teal-400/20 bg-teal-400/[0.08];
+      }
+
+      .guess-tier-3 {
+        @apply border-amber-300/20 bg-amber-300/[0.08];
+      }
+
+      .guess-tier-4 {
+        @apply border-orange-400/20 bg-orange-400/[0.08];
+      }
+
+      .guess-tier-5 {
+        @apply border-rose-400/20 bg-rose-400/[0.08];
+      }
+
+      .guess-tier-6 {
+        @apply border-fuchsia-400/25 bg-fuchsia-400/[0.10];
+      }
+
+      .guess-tier-win {
+        @apply border-emerald-400/25 bg-emerald-400/[0.10];
+      }
+
+      .primary-button {
+        @apply inline-flex items-center justify-center rounded-2xl border border-amber-300/40 bg-gradient-to-r from-amber-300 via-orange-400 to-rose-400 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-orange-500/20 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-amber-200/70 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
+      }
+
+      .secondary-button {
+        @apply inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-white/30;
+      }
+
+      .eyebrow {
+        @apply text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-400;
+      }
+
+      .info-chip {
+        @apply rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-medium text-slate-200;
+      }
+    }
+
+    @layer utilities {
+      .glass-grid {
+        background-image:
+          linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+        background-size: 28px 28px;
+        background-position: -1px -1px;
+      }
+    }
+
+    @keyframes rise-in {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
-<div id="game">
+  <main class="mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid w-full gap-6 lg:grid-cols-[minmax(0,1.08fr)_24rem]">
+      <section class="panel glass-grid p-5 sm:p-8">
+        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/80 to-transparent"></div>
+        <div class="flex flex-col gap-6">
+          <header class="flex flex-col gap-5">
+            <div class="flex flex-wrap items-center gap-3">
+              <div
+                id="dayBadge"
+                class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-200"
+              >
+                <span>🏏</span>
+                <span>Cricket Hot &amp; Cold</span>
+              </div>
+              <div class="info-chip">Daily challenge</div>
+              <div class="info-chip">Single-player</div>
+            </div>
 
-  <div class="header">
-    <div class="day-badge" id="dayBadge">🏏 Cricket Hot &amp; Cold</div>
-    <div class="title">Guess the Cricketer</div>
-    <div class="subtitle">Type any international cricketer — get hotter or colder each guess</div>
-  </div>
+            <div class="space-y-3">
+              <p class="eyebrow">Premium Cricket Puzzle</p>
+              <h1 class="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                Guess the cricketer before the board catches fire.
+              </h1>
+              <p class="max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+                Search any international player. Each guess reveals how close you are through country, role,
+                era, batting hand, and overall heat.
+              </p>
+            </div>
+          </header>
 
-  <div class="temp-scale" id="tempScale">
-    <span title="Freezing">🧊</span>
-    <span title="Cold">🌬️</span>
-    <span title="Cool">💧</span>
-    <span title="Warm">☀️</span>
-    <span title="Hot">🌶️</span>
-    <span title="Burning">🔥</span>
-    <span title="Volcanic!">🌋</span>
-  </div>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="stat-card">
+              <div class="eyebrow">Guesses</div>
+              <div class="mt-2 text-3xl font-semibold text-white" id="guessCount">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="eyebrow">Best Read</div>
+              <div class="mt-2 text-3xl font-semibold text-white" id="bestScore">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="eyebrow">Current Heat</div>
+              <div class="mt-2 flex items-center gap-3">
+                <span class="text-3xl" id="tempDisplay">🧊</span>
+                <div>
+                  <div class="text-lg font-semibold text-white" id="tempLabel">Freezing</div>
+                  <div class="text-xs text-slate-400">Latest guess state</div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">Guesses</div><div class="stat-val" id="guessCount">0</div></div>
-    <div class="stat-card"><div class="stat-label">Best</div><div class="stat-val" id="bestScore">—</div></div>
-    <div class="stat-card"><div class="stat-label">Temp</div><div class="stat-val" id="tempDisplay">🧊</div></div>
-  </div>
+          <section class="rounded-3xl border border-white/10 bg-slate-950/35 p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="eyebrow">Heat Meter</div>
+                <div class="mt-1 text-sm text-slate-300" id="statusText">Open with your first guess.</div>
+              </div>
+              <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Freezing to Volcanic</div>
+            </div>
 
-  <div class="error-msg" id="errMsg"></div>
+            <div class="mt-4 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
+              <span class="scale-item" title="Freezing">🧊</span>
+              <span class="scale-item" title="Cold">🌬️</span>
+              <span class="scale-item" title="Cool">💧</span>
+              <span class="scale-item" title="Warm">☀️</span>
+              <span class="scale-item" title="Hot">🌶️</span>
+              <span class="scale-item" title="Burning">🔥</span>
+              <span class="scale-item" title="Volcanic">🌋</span>
+            </div>
 
-  <div class="input-row">
-    <div class="autocomplete">
-      <input type="text" id="guessInput" placeholder="e.g. Virat Kohli, Joe Root..." autocomplete="off" />
-      <div class="dropdown" id="dropdown" style="display:none"></div>
+            <div class="mt-5 overflow-hidden rounded-full bg-white/[0.08]">
+              <div
+                id="heatBar"
+                class="h-2.5 w-0 rounded-full bg-gradient-to-r from-sky-400 via-amber-300 to-rose-400 transition-all duration-500"
+              ></div>
+            </div>
+            <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
+              <span>0%</span>
+              <span>100%</span>
+            </div>
+          </section>
+
+          <section>
+            <div id="errMsg" class="min-h-5 text-sm text-rose-300"></div>
+            <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+              <div class="autocomplete relative flex-1">
+                <label for="guessInput" class="sr-only">Guess a cricketer</label>
+                <input
+                  type="text"
+                  id="guessInput"
+                  placeholder="e.g. Virat Kohli, Joe Root..."
+                  autocomplete="off"
+                  class="w-full rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-4 pr-12 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/50 focus:bg-white/[0.10] focus:ring-2 focus:ring-amber-200/20"
+                />
+                <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-500">⌕</div>
+                <div id="dropdown" class="dropdown-panel hidden"></div>
+              </div>
+              <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Make Guess</button>
+            </div>
+            <p class="mt-3 text-xs text-slate-400">Autocomplete opens after two letters. Press Enter to submit.</p>
+          </section>
+
+          <div class="hint-shell" id="hintBox">
+            <strong>Hint:</strong> A famous international cricketer is hiding here.
+          </div>
+
+          <section class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div class="eyebrow">Guess Board</div>
+                <div class="mt-1 text-sm text-slate-300">Closest guesses float to the top.</div>
+              </div>
+              <div class="text-xs text-slate-400" id="latestGuessMeta">No guesses yet.</div>
+            </div>
+            <div
+              id="emptyState"
+              class="rounded-2xl border border-dashed border-white/10 bg-white/[0.03] px-5 py-10 text-center text-sm text-slate-400"
+            >
+              Your board is empty. Start with any international cricketer you know.
+            </div>
+            <div id="guessList" class="space-y-3"></div>
+          </section>
+
+          <div id="winBox"></div>
+
+          <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-slate-500">
+            <span>New cricketer every day</span>
+            <span>Made for cricket fans who like a little drama</span>
+          </footer>
+        </div>
+      </section>
+
+      <aside class="flex flex-col gap-6">
+        <section class="panel p-5">
+          <div class="eyebrow">Today&apos;s Board</div>
+          <div class="mt-3 space-y-4">
+            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+              <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Hint Level</div>
+              <div class="mt-2 text-2xl font-semibold text-white" id="hintLevel">1 / 5</div>
+              <div class="mt-1 text-sm text-slate-400">Fresh clues unlock as you keep probing.</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+                <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Player Pool</div>
+                <div class="mt-2 text-2xl font-semibold text-white" id="playerPool">0</div>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+                <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Best Heat</div>
+                <div class="mt-2 text-2xl font-semibold text-white" id="sideBestScore">—</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel p-5">
+          <div class="eyebrow">How Heat Works</div>
+          <div class="mt-3 space-y-3 text-sm leading-6 text-slate-300">
+            <p>The board rewards structural similarity, not just fame.</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="info-chip">Country match</span>
+              <span class="info-chip">Role match</span>
+              <span class="info-chip">Era match</span>
+              <span class="info-chip">Batting hand</span>
+              <span class="info-chip">Format overlap</span>
+              <span class="info-chip">Career volume</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel p-5">
+          <div class="eyebrow">Strategy</div>
+          <div class="mt-3 space-y-4 text-sm text-slate-300">
+            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+              Start broad with a famous active player to learn the country and era quickly.
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+              When the board gets warm, pivot by role before you narrow to a specific name.
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+              Use the share trail after a win to flex your read on the room.
+            </div>
+          </div>
+        </section>
+      </aside>
     </div>
-    <button class="guess-btn" onclick="makeGuess()">Guess</button>
-  </div>
+  </main>
 
-  <div class="hint-box" id="hintBox"><strong>💡 Hint:</strong> A famous international cricketer is hiding here...</div>
+  <script>
+    const CRICKETERS = [
+      {name:"Virat Kohli",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:27000,wickets:0},
+      {name:"Rohit Sharma",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:18000,wickets:0},
+      {name:"MS Dhoni",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:17000,wickets:0},
+      {name:"Sachin Tendulkar",country:"India",role:"Batter",era:"legend",format:"all",batting:"right",runs:34357,wickets:200},
+      {name:"Jasprit Bumrah",country:"India",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:400},
+      {name:"Ravindra Jadeja",country:"India",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:6000,wickets:600},
+      {name:"Shubman Gill",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:4000,wickets:0},
+      {name:"KL Rahul",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:9000,wickets:0},
+      {name:"Hardik Pandya",country:"India",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:5000,wickets:200},
+      {name:"Ravichandran Ashwin",country:"India",role:"Bowler",era:"modern",format:"test",batting:"right",runs:3000,wickets:765},
+      {name:"Sourav Ganguly",country:"India",role:"Batter",era:"legend",format:"all",batting:"left",runs:18575,wickets:100},
+      {name:"Rahul Dravid",country:"India",role:"Batter",era:"legend",format:"test",batting:"right",runs:24208,wickets:0},
+      {name:"Anil Kumble",country:"India",role:"Bowler",era:"legend",format:"test",batting:"right",runs:2000,wickets:956},
+      {name:"Suryakumar Yadav",country:"India",role:"Batter",era:"modern",format:"t20",batting:"right",runs:4500,wickets:0},
+      {name:"Yashasvi Jaiswal",country:"India",role:"Batter",era:"modern",format:"all",batting:"left",runs:2500,wickets:0},
+      {name:"Mohammed Siraj",country:"India",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:250},
+      {name:"Mohammed Shami",country:"India",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:350},
+      {name:"Rishabh Pant",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:5500,wickets:0},
+      {name:"Shreyas Iyer",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:5000,wickets:0},
+      {name:"Axar Patel",country:"India",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:2000,wickets:300},
+      {name:"Kuldeep Yadav",country:"India",role:"Bowler",era:"modern",format:"all",batting:"left",runs:200,wickets:200},
+      {name:"Yuvraj Singh",country:"India",role:"All-rounder",era:"legend",format:"all",batting:"left",runs:14000,wickets:300},
+      {name:"VVS Laxman",country:"India",role:"Batter",era:"legend",format:"test",batting:"right",runs:17154,wickets:0},
+      {name:"Harbhajan Singh",country:"India",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:711},
+      {name:"Zaheer Khan",country:"India",role:"Bowler",era:"legend",format:"all",batting:"left",runs:500,wickets:610},
+      {name:"Virender Sehwag",country:"India",role:"Batter",era:"legend",format:"all",batting:"right",runs:17253,wickets:100},
+      {name:"Gautam Gambhir",country:"India",role:"Batter",era:"legend",format:"all",batting:"left",runs:11647,wickets:0},
+      {name:"Dinesh Karthik",country:"India",role:"Keeper-Batter",era:"modern",format:"t20",batting:"right",runs:4000,wickets:0},
+      {name:"Cheteshwar Pujara",country:"India",role:"Batter",era:"modern",format:"test",batting:"right",runs:7195,wickets:0},
+      {name:"Ishan Kishan",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:2000,wickets:0},
+      {name:"Steve Smith",country:"Australia",role:"Batter",era:"modern",format:"test",batting:"right",runs:9000,wickets:50},
+      {name:"David Warner",country:"Australia",role:"Batter",era:"modern",format:"all",batting:"left",runs:18000,wickets:0},
+      {name:"Pat Cummins",country:"Australia",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:350},
+      {name:"Mitchell Starc",country:"Australia",role:"Bowler",era:"modern",format:"all",batting:"left",runs:1000,wickets:400},
+      {name:"Glenn Maxwell",country:"Australia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:8000,wickets:100},
+      {name:"Ricky Ponting",country:"Australia",role:"Batter",era:"legend",format:"all",batting:"right",runs:27483,wickets:0},
+      {name:"Shane Warne",country:"Australia",role:"Bowler",era:"legend",format:"test",batting:"right",runs:3000,wickets:1001},
+      {name:"Adam Gilchrist",country:"Australia",role:"Keeper-Batter",era:"legend",format:"all",batting:"left",runs:17000,wickets:0},
+      {name:"Matthew Hayden",country:"Australia",role:"Batter",era:"legend",format:"all",batting:"left",runs:18141,wickets:0},
+      {name:"Brett Lee",country:"Australia",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:718},
+      {name:"Glenn McGrath",country:"Australia",role:"Bowler",era:"legend",format:"test",batting:"right",runs:500,wickets:949},
+      {name:"Travis Head",country:"Australia",role:"Batter",era:"modern",format:"all",batting:"left",runs:5000,wickets:0},
+      {name:"Marnus Labuschagne",country:"Australia",role:"Batter",era:"modern",format:"test",batting:"right",runs:5000,wickets:50},
+      {name:"Josh Hazlewood",country:"Australia",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:300},
+      {name:"Nathan Lyon",country:"Australia",role:"Bowler",era:"modern",format:"test",batting:"right",runs:1000,wickets:500},
+      {name:"Alex Carey",country:"Australia",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:3000,wickets:0},
+      {name:"Marcus Stoinis",country:"Australia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:4000,wickets:100},
+      {name:"Justin Langer",country:"Australia",role:"Batter",era:"legend",format:"test",batting:"left",runs:14163,wickets:0},
+      {name:"Babar Azam",country:"Pakistan",role:"Batter",era:"modern",format:"all",batting:"right",runs:14000,wickets:0},
+      {name:"Shaheen Afridi",country:"Pakistan",role:"Bowler",era:"modern",format:"all",batting:"left",runs:200,wickets:300},
+      {name:"Mohammad Rizwan",country:"Pakistan",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:8000,wickets:0},
+      {name:"Wasim Akram",country:"Pakistan",role:"Bowler",era:"legend",format:"all",batting:"left",runs:4000,wickets:916},
+      {name:"Waqar Younis",country:"Pakistan",role:"Bowler",era:"legend",format:"all",batting:"right",runs:1000,wickets:789},
+      {name:"Inzamam-ul-Haq",country:"Pakistan",role:"Batter",era:"legend",format:"all",batting:"right",runs:20541,wickets:0},
+      {name:"Shoaib Akhtar",country:"Pakistan",role:"Bowler",era:"legend",format:"all",batting:"right",runs:500,wickets:444},
+      {name:"Imran Khan",country:"Pakistan",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:7816,wickets:544},
+      {name:"Javed Miandad",country:"Pakistan",role:"Batter",era:"legend",format:"all",batting:"right",runs:14469,wickets:0},
+      {name:"Naseem Shah",country:"Pakistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:150},
+      {name:"Fakhar Zaman",country:"Pakistan",role:"Batter",era:"modern",format:"all",batting:"left",runs:6000,wickets:0},
+      {name:"Imam-ul-Haq",country:"Pakistan",role:"Batter",era:"modern",format:"odi",batting:"left",runs:4000,wickets:0},
+      {name:"Shadab Khan",country:"Pakistan",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:2000,wickets:200},
+      {name:"Haris Rauf",country:"Pakistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:150},
+      {name:"Joe Root",country:"England",role:"Batter",era:"modern",format:"test",batting:"right",runs:12500,wickets:50},
+      {name:"Ben Stokes",country:"England",role:"All-rounder",era:"modern",format:"test",batting:"left",runs:7000,wickets:200},
+      {name:"Jonny Bairstow",country:"England",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:9000,wickets:0},
+      {name:"James Anderson",country:"England",role:"Bowler",era:"legend",format:"test",batting:"right",runs:1000,wickets:703},
+      {name:"Stuart Broad",country:"England",role:"Bowler",era:"legend",format:"test",batting:"right",runs:3000,wickets:604},
+      {name:"Alastair Cook",country:"England",role:"Batter",era:"legend",format:"test",batting:"left",runs:12472,wickets:0},
+      {name:"Kevin Pietersen",country:"England",role:"Batter",era:"legend",format:"all",batting:"right",runs:13797,wickets:50},
+      {name:"Andrew Flintoff",country:"England",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:7000,wickets:400},
+      {name:"Jos Buttler",country:"England",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:8000,wickets:0},
+      {name:"Jofra Archer",country:"England",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:150},
+      {name:"Mark Wood",country:"England",role:"Bowler",era:"modern",format:"all",batting:"right",runs:500,wickets:150},
+      {name:"Harry Brook",country:"England",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
+      {name:"Zak Crawley",country:"England",role:"Batter",era:"modern",format:"test",batting:"right",runs:3000,wickets:0},
+      {name:"Moeen Ali",country:"England",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:7000,wickets:200},
+      {name:"Adil Rashid",country:"England",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:200},
+      {name:"Kane Williamson",country:"New Zealand",role:"Batter",era:"modern",format:"all",batting:"right",runs:14000,wickets:0},
+      {name:"Trent Boult",country:"New Zealand",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:350},
+      {name:"Ross Taylor",country:"New Zealand",role:"Batter",era:"legend",format:"all",batting:"right",runs:18074,wickets:0},
+      {name:"Brendon McCullum",country:"New Zealand",role:"Keeper-Batter",era:"legend",format:"all",batting:"right",runs:10000,wickets:0},
+      {name:"Tim Southee",country:"New Zealand",role:"Bowler",era:"modern",format:"all",batting:"right",runs:2000,wickets:450},
+      {name:"Devon Conway",country:"New Zealand",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:3000,wickets:0},
+      {name:"Daryl Mitchell",country:"New Zealand",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:3000,wickets:50},
+      {name:"Martin Guptill",country:"New Zealand",role:"Batter",era:"modern",format:"all",batting:"right",runs:13000,wickets:0},
+      {name:"Daniel Vettori",country:"New Zealand",role:"All-rounder",era:"legend",format:"all",batting:"left",runs:6000,wickets:705},
+      {name:"Kyle Jamieson",country:"New Zealand",role:"Bowler",era:"modern",format:"test",batting:"right",runs:500,wickets:150},
+      {name:"AB de Villiers",country:"South Africa",role:"Keeper-Batter",era:"legend",format:"all",batting:"right",runs:20014,wickets:0},
+      {name:"Kagiso Rabada",country:"South Africa",role:"Bowler",era:"modern",format:"all",batting:"right",runs:500,wickets:350},
+      {name:"Hashim Amla",country:"South Africa",role:"Batter",era:"legend",format:"all",batting:"right",runs:18672,wickets:0},
+      {name:"Graeme Smith",country:"South Africa",role:"Batter",era:"legend",format:"test",batting:"left",runs:17265,wickets:0},
+      {name:"Jacques Kallis",country:"South Africa",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:25534,wickets:577},
+      {name:"Dale Steyn",country:"South Africa",role:"Bowler",era:"legend",format:"all",batting:"right",runs:1000,wickets:699},
+      {name:"Quinton de Kock",country:"South Africa",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:10000,wickets:0},
+      {name:"Temba Bavuma",country:"South Africa",role:"Batter",era:"modern",format:"all",batting:"right",runs:5000,wickets:0},
+      {name:"Aiden Markram",country:"South Africa",role:"Batter",era:"modern",format:"all",batting:"right",runs:5000,wickets:50},
+      {name:"Keshav Maharaj",country:"South Africa",role:"Bowler",era:"modern",format:"test",batting:"left",runs:500,wickets:200},
+      {name:"Marco Jansen",country:"South Africa",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:1000,wickets:100},
+      {name:"Anrich Nortje",country:"South Africa",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:150},
+      {name:"Morne Morkel",country:"South Africa",role:"Bowler",era:"legend",format:"all",batting:"right",runs:500,wickets:544},
+      {name:"Lasith Malinga",country:"Sri Lanka",role:"Bowler",era:"legend",format:"odi",batting:"right",runs:500,wickets:546},
+      {name:"Kumar Sangakkara",country:"Sri Lanka",role:"Keeper-Batter",era:"legend",format:"all",batting:"left",runs:28016,wickets:0},
+      {name:"Mahela Jayawardene",country:"Sri Lanka",role:"Batter",era:"legend",format:"all",batting:"right",runs:25957,wickets:0},
+      {name:"Muttiah Muralitharan",country:"Sri Lanka",role:"Bowler",era:"legend",format:"all",batting:"right",runs:1000,wickets:1347},
+      {name:"Tillakaratne Dilshan",country:"Sri Lanka",role:"Batter",era:"legend",format:"all",batting:"right",runs:16592,wickets:100},
+      {name:"Arjuna Ranatunga",country:"Sri Lanka",role:"Batter",era:"legend",format:"all",batting:"left",runs:10000,wickets:50},
+      {name:"Dimuth Karunaratne",country:"Sri Lanka",role:"Batter",era:"modern",format:"test",batting:"left",runs:6000,wickets:0},
+      {name:"Angelo Mathews",country:"Sri Lanka",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:11000,wickets:100},
+      {name:"Wanindu Hasaranga",country:"Sri Lanka",role:"All-rounder",era:"modern",format:"t20",batting:"right",runs:1000,wickets:200},
+      {name:"Pathum Nissanka",country:"Sri Lanka",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
+      {name:"Charith Asalanka",country:"Sri Lanka",role:"Batter",era:"modern",format:"t20",batting:"left",runs:2000,wickets:0},
+      {name:"Shakib Al Hasan",country:"Bangladesh",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:14000,wickets:700},
+      {name:"Tamim Iqbal",country:"Bangladesh",role:"Batter",era:"modern",format:"all",batting:"left",runs:14000,wickets:0},
+      {name:"Mushfiqur Rahim",country:"Bangladesh",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:12000,wickets:0},
+      {name:"Mashrafe Mortaza",country:"Bangladesh",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:400},
+      {name:"Mahmudullah",country:"Bangladesh",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:8000,wickets:100},
+      {name:"Mustafizur Rahman",country:"Bangladesh",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:300},
+      {name:"Liton Das",country:"Bangladesh",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:4000,wickets:0},
+      {name:"Mehidy Hasan Miraz",country:"Bangladesh",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:2000,wickets:250},
+      {name:"Brian Lara",country:"West Indies",role:"Batter",era:"legend",format:"test",batting:"left",runs:22358,wickets:0},
+      {name:"Viv Richards",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"right",runs:15000,wickets:100},
+      {name:"Clive Lloyd",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"left",runs:9000,wickets:0},
+      {name:"Curtly Ambrose",country:"West Indies",role:"Bowler",era:"legend",format:"test",batting:"right",runs:1000,wickets:630},
+      {name:"Malcolm Marshall",country:"West Indies",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:566},
+      {name:"Chris Gayle",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"left",runs:26000,wickets:200},
+      {name:"Shivnarine Chanderpaul",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"left",runs:19000,wickets:0},
+      {name:"Kieron Pollard",country:"West Indies",role:"All-rounder",era:"modern",format:"t20",batting:"right",runs:8000,wickets:200},
+      {name:"Nicholas Pooran",country:"West Indies",role:"Keeper-Batter",era:"modern",format:"t20",batting:"left",runs:5000,wickets:0},
+      {name:"Andre Russell",country:"West Indies",role:"All-rounder",era:"modern",format:"t20",batting:"right",runs:4000,wickets:150},
+      {name:"Jason Holder",country:"West Indies",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:4000,wickets:200},
+      {name:"Shai Hope",country:"West Indies",role:"Keeper-Batter",era:"modern",format:"odi",batting:"right",runs:6000,wickets:0},
+      {name:"Roston Chase",country:"West Indies",role:"All-rounder",era:"modern",format:"test",batting:"right",runs:3000,wickets:100},
+      {name:"Rashid Khan",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:500},
+      {name:"Mohammad Nabi",country:"Afghanistan",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:6000,wickets:400},
+      {name:"Mujeeb Ur Rahman",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:200},
+      {name:"Ibrahim Zadran",country:"Afghanistan",role:"Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
+      {name:"Rahmanullah Gurbaz",country:"Afghanistan",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
+      {name:"Azmatullah Omarzai",country:"Afghanistan",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
+      {name:"Paul Stirling",country:"Ireland",role:"Batter",era:"modern",format:"all",batting:"right",runs:7000,wickets:100},
+      {name:"Kevin O'Brien",country:"Ireland",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:5000,wickets:200},
+      {name:"Andrew Balbirnie",country:"Ireland",role:"Batter",era:"modern",format:"all",batting:"right",runs:4000,wickets:0},
+      {name:"Lorcan Tucker",country:"Ireland",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
+      {name:"Andy Flower",country:"Zimbabwe",role:"Keeper-Batter",era:"legend",format:"all",batting:"left",runs:12007,wickets:0},
+      {name:"Heath Streak",country:"Zimbabwe",role:"All-rounder",era:"legend",format:"all",batting:"left",runs:2000,wickets:455},
+      {name:"Brendan Taylor",country:"Zimbabwe",role:"Keeper-Batter",era:"legend",format:"all",batting:"right",runs:9000,wickets:0},
+      {name:"Sikandar Raza",country:"Zimbabwe",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:5000,wickets:200},
+      {name:"Sean Williams",country:"Zimbabwe",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:4000,wickets:150},
+      {name:"Ryan ten Doeschate",country:"Netherlands",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:4000,wickets:200},
+      {name:"Bas de Leede",country:"Netherlands",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
+      {name:"Gerhard Erasmus",country:"Namibia",role:"Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
+      {name:"David Wiese",country:"Namibia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
+      {name:"Kyle Coetzer",country:"Scotland",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
+      {name:"Rashid Khan",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:500},
+      {name:"Sandeep Lamichhane",country:"Nepal",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:200},
+      {name:"Rohit Paudel",country:"Nepal",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
+      {name:"Monank Patel",country:"USA",role:"Keeper-Batter",era:"modern",format:"t20",batting:"right",runs:500,wickets:0},
+      {name:"Aaron Jones",country:"USA",role:"Batter",era:"modern",format:"t20",batting:"right",runs:500,wickets:0},
+      {name:"Assad Vala",country:"Papua New Guinea",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:2000,wickets:100},
+      {name:"Muhammad Waseem",country:"UAE",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
+      {name:"Aqib Ilyas",country:"Oman",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
+    ];
 
-  <div class="guesses-list" id="guessList"></div>
-  <div id="winBox"></div>
+    const seen = new Set();
+    const PLAYERS = CRICKETERS.filter((cricketer) => {
+      if (seen.has(cricketer.name)) return false;
+      seen.add(cricketer.name);
+      return true;
+    });
 
-  <div class="footer">New cricketer every day · Made with ❤️ for cricket fans</div>
-</div>
+    const EMOJIS = ["🧊", "🌬️", "💧", "☀️", "🌶️", "🔥", "🌋"];
+    const TRAIL_EMOJIS = ["⬛", "🟦", "🟦", "🟨", "🟨", "🟧", "🟥"];
+    const HEAT_LABELS = ["Freezing", "Cold", "Cool", "Warm", "Hot", "Burning", "Volcanic"];
 
-<script>
-const CRICKETERS = [
-  {name:"Virat Kohli",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:27000,wickets:0},
-  {name:"Rohit Sharma",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:18000,wickets:0},
-  {name:"MS Dhoni",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:17000,wickets:0},
-  {name:"Sachin Tendulkar",country:"India",role:"Batter",era:"legend",format:"all",batting:"right",runs:34357,wickets:200},
-  {name:"Jasprit Bumrah",country:"India",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:400},
-  {name:"Ravindra Jadeja",country:"India",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:6000,wickets:600},
-  {name:"Shubman Gill",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:4000,wickets:0},
-  {name:"KL Rahul",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:9000,wickets:0},
-  {name:"Hardik Pandya",country:"India",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:5000,wickets:200},
-  {name:"Ravichandran Ashwin",country:"India",role:"Bowler",era:"modern",format:"test",batting:"right",runs:3000,wickets:765},
-  {name:"Sourav Ganguly",country:"India",role:"Batter",era:"legend",format:"all",batting:"left",runs:18575,wickets:100},
-  {name:"Rahul Dravid",country:"India",role:"Batter",era:"legend",format:"test",batting:"right",runs:24208,wickets:0},
-  {name:"Anil Kumble",country:"India",role:"Bowler",era:"legend",format:"test",batting:"right",runs:2000,wickets:956},
-  {name:"Suryakumar Yadav",country:"India",role:"Batter",era:"modern",format:"t20",batting:"right",runs:4500,wickets:0},
-  {name:"Yashasvi Jaiswal",country:"India",role:"Batter",era:"modern",format:"all",batting:"left",runs:2500,wickets:0},
-  {name:"Mohammed Siraj",country:"India",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:250},
-  {name:"Mohammed Shami",country:"India",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:350},
-  {name:"Rishabh Pant",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:5500,wickets:0},
-  {name:"Shreyas Iyer",country:"India",role:"Batter",era:"modern",format:"all",batting:"right",runs:5000,wickets:0},
-  {name:"Axar Patel",country:"India",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:2000,wickets:300},
-  {name:"Kuldeep Yadav",country:"India",role:"Bowler",era:"modern",format:"all",batting:"left",runs:200,wickets:200},
-  {name:"Yuvraj Singh",country:"India",role:"All-rounder",era:"legend",format:"all",batting:"left",runs:14000,wickets:300},
-  {name:"VVS Laxman",country:"India",role:"Batter",era:"legend",format:"test",batting:"right",runs:17154,wickets:0},
-  {name:"Harbhajan Singh",country:"India",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:711},
-  {name:"Zaheer Khan",country:"India",role:"Bowler",era:"legend",format:"all",batting:"left",runs:500,wickets:610},
-  {name:"Virender Sehwag",country:"India",role:"Batter",era:"legend",format:"all",batting:"right",runs:17253,wickets:100},
-  {name:"Gautam Gambhir",country:"India",role:"Batter",era:"legend",format:"all",batting:"left",runs:11647,wickets:0},
-  {name:"Dinesh Karthik",country:"India",role:"Keeper-Batter",era:"modern",format:"t20",batting:"right",runs:4000,wickets:0},
-  {name:"Cheteshwar Pujara",country:"India",role:"Batter",era:"modern",format:"test",batting:"right",runs:7195,wickets:0},
-  {name:"Ishan Kishan",country:"India",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:2000,wickets:0},
-  {name:"Steve Smith",country:"Australia",role:"Batter",era:"modern",format:"test",batting:"right",runs:9000,wickets:50},
-  {name:"David Warner",country:"Australia",role:"Batter",era:"modern",format:"all",batting:"left",runs:18000,wickets:0},
-  {name:"Pat Cummins",country:"Australia",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:350},
-  {name:"Mitchell Starc",country:"Australia",role:"Bowler",era:"modern",format:"all",batting:"left",runs:1000,wickets:400},
-  {name:"Glenn Maxwell",country:"Australia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:8000,wickets:100},
-  {name:"Ricky Ponting",country:"Australia",role:"Batter",era:"legend",format:"all",batting:"right",runs:27483,wickets:0},
-  {name:"Shane Warne",country:"Australia",role:"Bowler",era:"legend",format:"test",batting:"right",runs:3000,wickets:1001},
-  {name:"Adam Gilchrist",country:"Australia",role:"Keeper-Batter",era:"legend",format:"all",batting:"left",runs:17000,wickets:0},
-  {name:"Matthew Hayden",country:"Australia",role:"Batter",era:"legend",format:"all",batting:"left",runs:18141,wickets:0},
-  {name:"Brett Lee",country:"Australia",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:718},
-  {name:"Glenn McGrath",country:"Australia",role:"Bowler",era:"legend",format:"test",batting:"right",runs:500,wickets:949},
-  {name:"Travis Head",country:"Australia",role:"Batter",era:"modern",format:"all",batting:"left",runs:5000,wickets:0},
-  {name:"Marnus Labuschagne",country:"Australia",role:"Batter",era:"modern",format:"test",batting:"right",runs:5000,wickets:50},
-  {name:"Josh Hazlewood",country:"Australia",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:300},
-  {name:"Nathan Lyon",country:"Australia",role:"Bowler",era:"modern",format:"test",batting:"right",runs:1000,wickets:500},
-  {name:"Alex Carey",country:"Australia",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:3000,wickets:0},
-  {name:"Marcus Stoinis",country:"Australia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:4000,wickets:100},
-  {name:"Justin Langer",country:"Australia",role:"Batter",era:"legend",format:"test",batting:"left",runs:14163,wickets:0},
-  {name:"Babar Azam",country:"Pakistan",role:"Batter",era:"modern",format:"all",batting:"right",runs:14000,wickets:0},
-  {name:"Shaheen Afridi",country:"Pakistan",role:"Bowler",era:"modern",format:"all",batting:"left",runs:200,wickets:300},
-  {name:"Mohammad Rizwan",country:"Pakistan",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:8000,wickets:0},
-  {name:"Wasim Akram",country:"Pakistan",role:"Bowler",era:"legend",format:"all",batting:"left",runs:4000,wickets:916},
-  {name:"Waqar Younis",country:"Pakistan",role:"Bowler",era:"legend",format:"all",batting:"right",runs:1000,wickets:789},
-  {name:"Inzamam-ul-Haq",country:"Pakistan",role:"Batter",era:"legend",format:"all",batting:"right",runs:20541,wickets:0},
-  {name:"Shoaib Akhtar",country:"Pakistan",role:"Bowler",era:"legend",format:"all",batting:"right",runs:500,wickets:444},
-  {name:"Imran Khan",country:"Pakistan",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:7816,wickets:544},
-  {name:"Javed Miandad",country:"Pakistan",role:"Batter",era:"legend",format:"all",batting:"right",runs:14469,wickets:0},
-  {name:"Naseem Shah",country:"Pakistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:150},
-  {name:"Fakhar Zaman",country:"Pakistan",role:"Batter",era:"modern",format:"all",batting:"left",runs:6000,wickets:0},
-  {name:"Imam-ul-Haq",country:"Pakistan",role:"Batter",era:"modern",format:"odi",batting:"left",runs:4000,wickets:0},
-  {name:"Shadab Khan",country:"Pakistan",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:2000,wickets:200},
-  {name:"Haris Rauf",country:"Pakistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:150},
-  {name:"Joe Root",country:"England",role:"Batter",era:"modern",format:"test",batting:"right",runs:12500,wickets:50},
-  {name:"Ben Stokes",country:"England",role:"All-rounder",era:"modern",format:"test",batting:"left",runs:7000,wickets:200},
-  {name:"Jonny Bairstow",country:"England",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:9000,wickets:0},
-  {name:"James Anderson",country:"England",role:"Bowler",era:"legend",format:"test",batting:"right",runs:1000,wickets:703},
-  {name:"Stuart Broad",country:"England",role:"Bowler",era:"legend",format:"test",batting:"right",runs:3000,wickets:604},
-  {name:"Alastair Cook",country:"England",role:"Batter",era:"legend",format:"test",batting:"left",runs:12472,wickets:0},
-  {name:"Kevin Pietersen",country:"England",role:"Batter",era:"legend",format:"all",batting:"right",runs:13797,wickets:50},
-  {name:"Andrew Flintoff",country:"England",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:7000,wickets:400},
-  {name:"Jos Buttler",country:"England",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:8000,wickets:0},
-  {name:"Jofra Archer",country:"England",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:150},
-  {name:"Mark Wood",country:"England",role:"Bowler",era:"modern",format:"all",batting:"right",runs:500,wickets:150},
-  {name:"Harry Brook",country:"England",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
-  {name:"Zak Crawley",country:"England",role:"Batter",era:"modern",format:"test",batting:"right",runs:3000,wickets:0},
-  {name:"Moeen Ali",country:"England",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:7000,wickets:200},
-  {name:"Adil Rashid",country:"England",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:200},
-  {name:"Kane Williamson",country:"New Zealand",role:"Batter",era:"modern",format:"all",batting:"right",runs:14000,wickets:0},
-  {name:"Trent Boult",country:"New Zealand",role:"Bowler",era:"modern",format:"all",batting:"right",runs:300,wickets:350},
-  {name:"Ross Taylor",country:"New Zealand",role:"Batter",era:"legend",format:"all",batting:"right",runs:18074,wickets:0},
-  {name:"Brendon McCullum",country:"New Zealand",role:"Keeper-Batter",era:"legend",format:"all",batting:"right",runs:10000,wickets:0},
-  {name:"Tim Southee",country:"New Zealand",role:"Bowler",era:"modern",format:"all",batting:"right",runs:2000,wickets:450},
-  {name:"Devon Conway",country:"New Zealand",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:3000,wickets:0},
-  {name:"Daryl Mitchell",country:"New Zealand",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:3000,wickets:50},
-  {name:"Martin Guptill",country:"New Zealand",role:"Batter",era:"modern",format:"all",batting:"right",runs:13000,wickets:0},
-  {name:"Daniel Vettori",country:"New Zealand",role:"All-rounder",era:"legend",format:"all",batting:"left",runs:6000,wickets:705},
-  {name:"Kyle Jamieson",country:"New Zealand",role:"Bowler",era:"modern",format:"test",batting:"right",runs:500,wickets:150},
-  {name:"AB de Villiers",country:"South Africa",role:"Keeper-Batter",era:"legend",format:"all",batting:"right",runs:20014,wickets:0},
-  {name:"Kagiso Rabada",country:"South Africa",role:"Bowler",era:"modern",format:"all",batting:"right",runs:500,wickets:350},
-  {name:"Hashim Amla",country:"South Africa",role:"Batter",era:"legend",format:"all",batting:"right",runs:18672,wickets:0},
-  {name:"Graeme Smith",country:"South Africa",role:"Batter",era:"legend",format:"test",batting:"left",runs:17265,wickets:0},
-  {name:"Jacques Kallis",country:"South Africa",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:25534,wickets:577},
-  {name:"Dale Steyn",country:"South Africa",role:"Bowler",era:"legend",format:"all",batting:"right",runs:1000,wickets:699},
-  {name:"Quinton de Kock",country:"South Africa",role:"Keeper-Batter",era:"modern",format:"all",batting:"left",runs:10000,wickets:0},
-  {name:"Temba Bavuma",country:"South Africa",role:"Batter",era:"modern",format:"all",batting:"right",runs:5000,wickets:0},
-  {name:"Aiden Markram",country:"South Africa",role:"Batter",era:"modern",format:"all",batting:"right",runs:5000,wickets:50},
-  {name:"Keshav Maharaj",country:"South Africa",role:"Bowler",era:"modern",format:"test",batting:"left",runs:500,wickets:200},
-  {name:"Marco Jansen",country:"South Africa",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:1000,wickets:100},
-  {name:"Anrich Nortje",country:"South Africa",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:150},
-  {name:"Morne Morkel",country:"South Africa",role:"Bowler",era:"legend",format:"all",batting:"right",runs:500,wickets:544},
-  {name:"Lasith Malinga",country:"Sri Lanka",role:"Bowler",era:"legend",format:"odi",batting:"right",runs:500,wickets:546},
-  {name:"Kumar Sangakkara",country:"Sri Lanka",role:"Keeper-Batter",era:"legend",format:"all",batting:"left",runs:28016,wickets:0},
-  {name:"Mahela Jayawardene",country:"Sri Lanka",role:"Batter",era:"legend",format:"all",batting:"right",runs:25957,wickets:0},
-  {name:"Muttiah Muralitharan",country:"Sri Lanka",role:"Bowler",era:"legend",format:"all",batting:"right",runs:1000,wickets:1347},
-  {name:"Tillakaratne Dilshan",country:"Sri Lanka",role:"Batter",era:"legend",format:"all",batting:"right",runs:16592,wickets:100},
-  {name:"Arjuna Ranatunga",country:"Sri Lanka",role:"Batter",era:"legend",format:"all",batting:"left",runs:10000,wickets:50},
-  {name:"Dimuth Karunaratne",country:"Sri Lanka",role:"Batter",era:"modern",format:"test",batting:"left",runs:6000,wickets:0},
-  {name:"Angelo Mathews",country:"Sri Lanka",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:11000,wickets:100},
-  {name:"Wanindu Hasaranga",country:"Sri Lanka",role:"All-rounder",era:"modern",format:"t20",batting:"right",runs:1000,wickets:200},
-  {name:"Pathum Nissanka",country:"Sri Lanka",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
-  {name:"Charith Asalanka",country:"Sri Lanka",role:"Batter",era:"modern",format:"t20",batting:"left",runs:2000,wickets:0},
-  {name:"Shakib Al Hasan",country:"Bangladesh",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:14000,wickets:700},
-  {name:"Tamim Iqbal",country:"Bangladesh",role:"Batter",era:"modern",format:"all",batting:"left",runs:14000,wickets:0},
-  {name:"Mushfiqur Rahim",country:"Bangladesh",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:12000,wickets:0},
-  {name:"Mashrafe Mortaza",country:"Bangladesh",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:400},
-  {name:"Mahmudullah",country:"Bangladesh",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:8000,wickets:100},
-  {name:"Mustafizur Rahman",country:"Bangladesh",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:300},
-  {name:"Liton Das",country:"Bangladesh",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:4000,wickets:0},
-  {name:"Mehidy Hasan Miraz",country:"Bangladesh",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:2000,wickets:250},
-  {name:"Brian Lara",country:"West Indies",role:"Batter",era:"legend",format:"test",batting:"left",runs:22358,wickets:0},
-  {name:"Viv Richards",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"right",runs:15000,wickets:100},
-  {name:"Clive Lloyd",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"left",runs:9000,wickets:0},
-  {name:"Curtly Ambrose",country:"West Indies",role:"Bowler",era:"legend",format:"test",batting:"right",runs:1000,wickets:630},
-  {name:"Malcolm Marshall",country:"West Indies",role:"Bowler",era:"legend",format:"all",batting:"right",runs:2000,wickets:566},
-  {name:"Chris Gayle",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"left",runs:26000,wickets:200},
-  {name:"Shivnarine Chanderpaul",country:"West Indies",role:"Batter",era:"legend",format:"all",batting:"left",runs:19000,wickets:0},
-  {name:"Kieron Pollard",country:"West Indies",role:"All-rounder",era:"modern",format:"t20",batting:"right",runs:8000,wickets:200},
-  {name:"Nicholas Pooran",country:"West Indies",role:"Keeper-Batter",era:"modern",format:"t20",batting:"left",runs:5000,wickets:0},
-  {name:"Andre Russell",country:"West Indies",role:"All-rounder",era:"modern",format:"t20",batting:"right",runs:4000,wickets:150},
-  {name:"Jason Holder",country:"West Indies",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:4000,wickets:200},
-  {name:"Shai Hope",country:"West Indies",role:"Keeper-Batter",era:"modern",format:"odi",batting:"right",runs:6000,wickets:0},
-  {name:"Roston Chase",country:"West Indies",role:"All-rounder",era:"modern",format:"test",batting:"right",runs:3000,wickets:100},
-  {name:"Rashid Khan",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:500},
-  {name:"Mohammad Nabi",country:"Afghanistan",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:6000,wickets:400},
-  {name:"Mujeeb Ur Rahman",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:100,wickets:200},
-  {name:"Ibrahim Zadran",country:"Afghanistan",role:"Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
-  {name:"Rahmanullah Gurbaz",country:"Afghanistan",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
-  {name:"Azmatullah Omarzai",country:"Afghanistan",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
-  {name:"Paul Stirling",country:"Ireland",role:"Batter",era:"modern",format:"all",batting:"right",runs:7000,wickets:100},
-  {name:"Kevin O'Brien",country:"Ireland",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:5000,wickets:200},
-  {name:"Andrew Balbirnie",country:"Ireland",role:"Batter",era:"modern",format:"all",batting:"right",runs:4000,wickets:0},
-  {name:"Lorcan Tucker",country:"Ireland",role:"Keeper-Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
-  {name:"Andy Flower",country:"Zimbabwe",role:"Keeper-Batter",era:"legend",format:"all",batting:"left",runs:12007,wickets:0},
-  {name:"Heath Streak",country:"Zimbabwe",role:"All-rounder",era:"legend",format:"all",batting:"left",runs:2000,wickets:455},
-  {name:"Brendan Taylor",country:"Zimbabwe",role:"Keeper-Batter",era:"legend",format:"all",batting:"right",runs:9000,wickets:0},
-  {name:"Sikandar Raza",country:"Zimbabwe",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:5000,wickets:200},
-  {name:"Sean Williams",country:"Zimbabwe",role:"All-rounder",era:"modern",format:"all",batting:"left",runs:4000,wickets:150},
-  {name:"Ryan ten Doeschate",country:"Netherlands",role:"All-rounder",era:"legend",format:"all",batting:"right",runs:4000,wickets:200},
-  {name:"Bas de Leede",country:"Netherlands",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
-  {name:"Gerhard Erasmus",country:"Namibia",role:"Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
-  {name:"David Wiese",country:"Namibia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
-  {name:"Kyle Coetzer",country:"Scotland",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
-  {name:"Rashid Khan",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:500},
-  {name:"Sandeep Lamichhane",country:"Nepal",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:200},
-  {name:"Rohit Paudel",country:"Nepal",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
-  {name:"Monank Patel",country:"USA",role:"Keeper-Batter",era:"modern",format:"t20",batting:"right",runs:500,wickets:0},
-  {name:"Aaron Jones",country:"USA",role:"Batter",era:"modern",format:"t20",batting:"right",runs:500,wickets:0},
-  {name:"Assad Vala",country:"Papua New Guinea",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:2000,wickets:100},
-  {name:"Muhammad Waseem",country:"UAE",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
-  {name:"Aqib Ilyas",country:"Oman",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
-];
+    function getTodayIndex() {
+      return Math.floor(new Date().getTime() / 86400000) % PLAYERS.length;
+    }
 
-// Remove duplicates by name
-const seen = new Set();
-const PLAYERS = CRICKETERS.filter(c => { if(seen.has(c.name)){return false;} seen.add(c.name); return true; });
+    const DAY_STAMP = Math.floor(new Date().getTime() / 86400000);
+    const SECRET = PLAYERS[getTodayIndex()];
+    const DAY_NUM = DAY_STAMP % 9999;
+    const STORAGE_KEY = "cricket-hot-cold-state";
 
-const DAY_STAMP = Math.floor(new Date().getTime() / 86400000);
-const STORAGE_KEY = "cricket-hot-cold:daily-state:v1";
+    const dayBadge = document.getElementById("dayBadge");
+    const guessInput = document.getElementById("guessInput");
+    const guessBtn = document.getElementById("guessBtn");
+    const dropdown = document.getElementById("dropdown");
 
-function getTodayIndex() {
-  return DAY_STAMP % PLAYERS.length;
-}
-const SECRET = PLAYERS[getTodayIndex()];
-const DAY_NUM = DAY_STAMP % 9999;
+    dayBadge.innerHTML = `<span>🏏</span><span>Cricket Hot &amp; Cold #${DAY_NUM}</span>`;
+    document.getElementById("playerPool").textContent = PLAYERS.length;
 
-document.getElementById("dayBadge").textContent = "🏏 Cricket Hot & Cold #" + DAY_NUM;
+    let guesses = [];
+    let won = false;
 
-let guesses = [], won = false;
+    function getEmojiIdx(score) {
+      if (score >= 96) return 6;
+      if (score >= 80) return 5;
+      if (score >= 65) return 4;
+      if (score >= 50) return 3;
+      if (score >= 35) return 2;
+      if (score >= 20) return 1;
+      return 0;
+    }
 
-const EMOJIS   = ["🧊","🌬️","💧","☀️","🌶️","🔥","🌋"];
-const TRAIL_EMOJIS = ["⬛","🟦","🟦","🟨","🟨","🟧","🟥"];
+    function similarity(a, b) {
+      let score = 0;
+      if (a.country === b.country) score += 38;
+      if (a.role === b.role) score += 22;
+      if (a.era === b.era) score += 14;
+      if (a.batting === b.batting) score += 8;
+      const fmt = (value) => value === "all" ? ["test", "odi", "t20"] : [value];
+      if (fmt(a.format).some((format) => fmt(b.format).includes(format))) score += 8;
+      if (Math.abs(a.runs - b.runs) < 5000) score += 5;
+      if (Math.abs(a.wickets - b.wickets) < 150) score += 5;
+      return Math.min(score, 99);
+    }
 
-function getEmojiIdx(score) {
-  if (score >= 96) return 6;
-  if (score >= 80) return 5;
-  if (score >= 65) return 4;
-  if (score >= 50) return 3;
-  if (score >= 35) return 2;
-  if (score >= 20) return 1;
-  return 0;
-}
+    function buildGuess(player) {
+      const isCorrect = player.name === SECRET.name;
+      return {
+        name: player.name,
+        country: player.country,
+        sim: isCorrect ? 100 : similarity(player, SECRET),
+        isCorrect,
+      };
+    }
 
-function similarity(a, b) {
-  let score = 0;
-  if (a.country === b.country) score += 38;
-  if (a.role === b.role) score += 22;
-  if (a.era === b.era) score += 14;
-  if (a.batting === b.batting) score += 8;
-  const fmt = x => x === "all" ? ["test","odi","t20"] : [x];
-  if (fmt(a.format).some(f => fmt(b.format).includes(f))) score += 8;
-  if (Math.abs(a.runs - b.runs) < 5000) score += 5;
-  if (Math.abs(a.wickets - b.wickets) < 150) score += 5;
-  return Math.min(score, 99);
-}
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
 
-function buildGuess(player) {
-  const isCorrect = player.name === SECRET.name;
-  return {
-    name: player.name,
-    country: player.country,
-    sim: isCorrect ? 100 : similarity(player, SECRET),
-    isCorrect,
-  };
-}
+    function getHeatLabel(score) {
+      return HEAT_LABELS[getEmojiIdx(score)];
+    }
 
-function saveGame() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      dayStamp: DAY_STAMP,
-      secret: SECRET.name,
-      guesses: guesses.map(g => g.name),
-      won,
-    }));
-  } catch (err) {
-    // Some browsers disable storage in private or locked-down contexts.
-  }
-}
+    function getStatusCopy(score) {
+      if (score >= 96) return "You are basically on top of it.";
+      if (score >= 80) return "Very close. Stay in the same lane.";
+      if (score >= 65) return "Hot read. Fine-tune the name.";
+      if (score >= 50) return "Warm. The board likes this direction.";
+      if (score >= 35) return "Some signal. Try a role or era pivot.";
+      if (score >= 20) return "Cold, but not useless.";
+      return "Freezing. Change country or player archetype.";
+    }
 
-function loadGame() {
-  let saved;
-  try {
-    saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  } catch (err) {
-    return;
-  }
+    function setSolvedState() {
+      guessInput.disabled = won;
+      guessBtn.disabled = won;
+      guessBtn.textContent = won ? "Solved" : "Make Guess";
+      guessInput.placeholder = won ? "Daily puzzle solved." : "e.g. Virat Kohli, Joe Root...";
+    }
 
-  if (!saved || saved.dayStamp !== DAY_STAMP || saved.secret !== SECRET.name || !Array.isArray(saved.guesses)) {
-    try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
-    return;
-  }
+    function saveGame() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          dayStamp: DAY_STAMP,
+          secret: SECRET.name,
+          guesses: guesses.map((guess) => guess.name),
+          won,
+        }));
+      } catch (error) {
+        // Storage can be blocked in private browsing or stricter environments.
+      }
+    }
 
-  const restoredNames = new Set();
-  guesses = saved.guesses.reduce((restored, name) => {
-    const player = PLAYERS.find(c => c.name === name);
-    if (!player || restoredNames.has(player.name)) return restored;
-    restoredNames.add(player.name);
-    restored.push(buildGuess(player));
-    return restored;
-  }, []);
+    function loadGame() {
+      let saved;
+      try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      } catch (error) {
+        return;
+      }
 
-  won = guesses.some(g => g.isCorrect);
-  if (guesses.length) render();
-  if (won) showWin();
-}
+      if (!saved || saved.dayStamp !== DAY_STAMP || saved.secret !== SECRET.name || !Array.isArray(saved.guesses)) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (error) {}
+        return;
+      }
 
-function makeGuess() {
-  if (won) return;
-  const input = document.getElementById("guessInput");
-  const val = input.value.trim();
-  const err = document.getElementById("errMsg");
-  err.textContent = "";
-  if (!val) return;
-  const found = PLAYERS.find(c => c.name.toLowerCase() === val.toLowerCase());
-  if (!found) { err.textContent = "Cricketer not found. Use the autocomplete suggestions."; return; }
-  if (guesses.find(g => g.name.toLowerCase() === found.name.toLowerCase())) {
-    err.textContent = "Already guessed! Try a different cricketer."; return;
-  }
-  const guess = buildGuess(found);
-  guesses.unshift(guess);
-  input.value = "";
-  document.getElementById("dropdown").style.display = "none";
-  render();
-  if (guess.isCorrect) showWin();
-  saveGame();
-}
+      const restoredNames = new Set();
+      guesses = saved.guesses.reduce((restored, name) => {
+        const player = PLAYERS.find((entry) => entry.name === name);
+        if (!player || restoredNames.has(player.name)) return restored;
+        restoredNames.add(player.name);
+        restored.push(buildGuess(player));
+        return restored;
+      }, []);
 
-function render() {
-  document.getElementById("guessCount").textContent = guesses.length;
-  const best = guesses.reduce((mx, g) => Math.max(mx, g.sim), 0);
-  document.getElementById("bestScore").textContent = best + "%";
-  const latest = guesses[0];
-  const eidx = latest ? getEmojiIdx(latest.sim) : 0;
-  document.getElementById("tempDisplay").textContent = latest ? EMOJIS[eidx] : "🧊";
-  document.querySelectorAll("#tempScale span").forEach((s, i) => s.className = i === eidx && latest ? "active" : "");
-  document.getElementById("guessList").innerHTML = guesses.map(g => {
-    if (g.isCorrect) return `<div class="guess-row"><span class="guess-emoji">✅</span><div class="guess-name">${g.name}<span class="guess-country">${g.country}</span></div><span class="guess-pct">100%</span></div>`;
-    const ei = getEmojiIdx(g.sim);
-    return `<div class="guess-row"><span class="guess-emoji">${EMOJIS[ei]}</span><div class="guess-name">${g.name}<span class="guess-country">${g.country}</span></div><span class="guess-pct">${g.sim}%</span></div>`;
-  }).join("");
-  updateHint();
-}
+      won = guesses.some((guess) => guess.isCorrect);
+      if (guesses.length) render();
+      if (won) showWin();
+    }
 
-function updateHint() {
-  const hints = [
-    "A famous international cricketer is hiding here...",
-    `This cricketer is from <strong>${SECRET.country}</strong>.`,
-    `Role: <strong>${SECRET.role}</strong>.`,
-    `Era: <strong>${SECRET.era === "legend" ? "Legendary — retired or hall of fame" : "Current generation"}</strong>.`,
-    `Bats: <strong>${SECRET.batting}-handed</strong>.`,
-  ];
-  const idx = Math.min(Math.floor(guesses.length / 3), hints.length - 1);
-  document.getElementById("hintBox").innerHTML = `<strong>💡 Hint:</strong> ${hints[idx]}`;
-}
+    function makeGuess() {
+      if (won) return;
 
-function getTrail() {
-  return guesses.map(g => {
-    if (g.isCorrect) return "🟩";
-    return TRAIL_EMOJIS[getEmojiIdx(g.sim)];
-  }).reverse().join("");
-}
+      const value = guessInput.value.trim();
+      const error = document.getElementById("errMsg");
+      error.textContent = "";
 
-function showWin() {
-  won = true;
-  document.getElementById("winBox").innerHTML = `
-    <div class="win-box">
-      <div style="font-size:36px;margin-bottom:8px;">🏆</div>
-      <div class="win-title">You got it — ${SECRET.name}!</div>
-      <div class="win-sub">Solved in ${guesses.length} guess${guesses.length===1?"":"es"} • ${SECRET.country}</div>
-      <div class="emoji-trail">${getTrail()}</div>
-      <div class="copied-msg" id="copiedMsg"></div>
-      <div class="share-row">
-        <button class="share-btn" onclick="shareResult()">📋 Copy result for Reddit</button>
-      </div>
-    </div>`;
-}
+      if (!value) {
+        error.textContent = "Type a cricketer name to make a guess.";
+        return;
+      }
 
-function shareResult() {
-  const text = `🏏 Cricket Hot & Cold #${DAY_NUM}\nI guessed ${SECRET.name} in ${guesses.length} tries!\n${getTrail()}\nScale: ⬛🟦🟨🟧🟥🟩\nPlay at: yourcricketgame.vercel.app`;
-  navigator.clipboard.writeText(text).then(() => {
-    const el = document.getElementById("copiedMsg");
-    if (el) { el.textContent = "✅ Copied! Now paste it on Reddit."; setTimeout(() => { if(el) el.textContent=""; }, 3000); }
-  });
-}
+      const found = PLAYERS.find((player) => player.name.toLowerCase() === value.toLowerCase());
+      if (!found) {
+        error.textContent = "Cricketer not found. Use the autocomplete suggestions.";
+        return;
+      }
 
-document.getElementById("guessInput").addEventListener("keydown", e => { if (e.key === "Enter") makeGuess(); });
-document.getElementById("guessInput").addEventListener("input", function () {
-  const val = this.value.trim().toLowerCase();
-  const dd = document.getElementById("dropdown");
-  if (!val || val.length < 2) { dd.style.display = "none"; return; }
-  const matches = PLAYERS.filter(c => c.name.toLowerCase().includes(val)).slice(0, 7);
-  if (!matches.length) { dd.style.display = "none"; return; }
-  dd.innerHTML = matches.map(c => `<div onclick="selectPlayer('${c.name.replace(/'/g, "\\'")}')"><span>${c.name}</span><span class="dc">${c.country}</span></div>`).join("");
-  dd.style.display = "block";
-});
-function selectPlayer(name) {
-  document.getElementById("guessInput").value = name;
-  document.getElementById("dropdown").style.display = "none";
-}
-document.addEventListener("click", e => { if (!e.target.closest(".autocomplete")) document.getElementById("dropdown").style.display = "none"; });
-loadGame();
-</script>
+      if (guesses.find((guess) => guess.name.toLowerCase() === found.name.toLowerCase())) {
+        error.textContent = "Already guessed. Try a different cricketer.";
+        return;
+      }
+
+      const guess = buildGuess(found);
+      guesses.unshift(guess);
+
+      guessInput.value = "";
+      dropdown.classList.add("hidden");
+
+      if (guess.isCorrect) {
+        won = true;
+      }
+
+      render();
+
+      if (guess.isCorrect) {
+        showWin();
+      }
+
+      saveGame();
+    }
+
+    function renderGuess(guess) {
+      const emojiIndex = guess.isCorrect ? 6 : getEmojiIdx(guess.sim);
+      const tierClass = guess.isCorrect ? "guess-tier-win" : `guess-tier-${emojiIndex}`;
+      const label = guess.isCorrect ? "Solved" : getHeatLabel(guess.sim);
+
+      return `
+        <div class="guess-row ${tierClass}">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/35 text-2xl">
+            ${guess.isCorrect ? "✅" : EMOJIS[emojiIndex]}
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="truncate text-sm font-semibold text-white sm:text-base">${escapeHtml(guess.name)}</div>
+            <div class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">${escapeHtml(guess.country)}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-lg font-semibold text-white">${guess.isCorrect ? "100%" : `${guess.sim}%`}</div>
+            <div class="text-[0.7rem] uppercase tracking-[0.24em] text-slate-400">${label}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateHint() {
+      const hints = [
+        "A famous international cricketer is hiding here.",
+        `This cricketer is from <strong>${SECRET.country}</strong>.`,
+        `Role: <strong>${SECRET.role}</strong>.`,
+        `Era: <strong>${SECRET.era === "legend" ? "Legendary — retired or hall of fame" : "Current generation"}</strong>.`,
+        `Bats: <strong>${SECRET.batting}-handed</strong>.`,
+      ];
+
+      const hintIndex = Math.min(Math.floor(guesses.length / 3), hints.length - 1);
+      document.getElementById("hintLevel").textContent = `${hintIndex + 1} / ${hints.length}`;
+      document.getElementById("hintBox").innerHTML = `<strong>Hint:</strong> ${hints[hintIndex]}`;
+    }
+
+    function getTrail() {
+      return guesses
+        .map((guess) => guess.isCorrect ? "🟩" : TRAIL_EMOJIS[getEmojiIdx(guess.sim)])
+        .reverse()
+        .join("");
+    }
+
+    function showWin() {
+      won = true;
+      document.getElementById("winBox").innerHTML = `
+        <div class="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.08] p-6 text-center shadow-lg shadow-emerald-900/20">
+          <div class="text-4xl">🏆</div>
+          <div class="mt-4 text-2xl font-semibold text-white">You got it — ${escapeHtml(SECRET.name)}!</div>
+          <div class="mt-2 text-sm text-emerald-100/80">
+            Solved in ${guesses.length} guess${guesses.length === 1 ? "" : "es"} • ${escapeHtml(SECRET.country)}
+          </div>
+          <div class="mt-4 break-all text-2xl tracking-[0.3em] text-white">${getTrail()}</div>
+          <div class="mt-3 min-h-5 text-sm text-emerald-200" id="copiedMsg"></div>
+          <div class="mt-5 flex flex-wrap justify-center gap-3">
+            <button class="secondary-button" onclick="shareResult()">Copy Result</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
+      const guessCount = guesses.length;
+      const latest = guesses[0] || null;
+      const best = guesses.length ? guesses.reduce((max, guess) => Math.max(max, guess.sim), 0) : null;
+      const emojiIndex = latest ? getEmojiIdx(latest.sim) : 0;
+      const latestScore = latest ? latest.sim : 0;
+
+      document.getElementById("guessCount").textContent = guessCount;
+      document.getElementById("bestScore").textContent = best === null ? "—" : `${best}%`;
+      document.getElementById("sideBestScore").textContent = best === null ? "—" : `${best}%`;
+      document.getElementById("tempDisplay").textContent = latest ? (latest.isCorrect ? "✅" : EMOJIS[emojiIndex]) : "🧊";
+      document.getElementById("tempLabel").textContent = latest ? (latest.isCorrect ? "Solved" : getHeatLabel(latest.sim)) : "Freezing";
+      document.getElementById("statusText").textContent = latest ? getStatusCopy(latestScore) : "Open with your first guess.";
+      document.getElementById("latestGuessMeta").textContent = latest
+        ? `${latest.name} · ${latest.isCorrect ? "100%" : `${latest.sim}%`} ${latest.isCorrect ? "Solved" : getHeatLabel(latest.sim)}`
+        : "No guesses yet.";
+      document.getElementById("heatBar").style.width = `${latestScore}%`;
+      document.getElementById("emptyState").classList.toggle("hidden", guessCount > 0);
+      document.getElementById("guessList").innerHTML = guesses.map(renderGuess).join("");
+
+      document.querySelectorAll("#tempScale .scale-item").forEach((element, index) => {
+        element.classList.toggle("active", Boolean(latest) && index === emojiIndex);
+      });
+
+      updateHint();
+      setSolvedState();
+    }
+
+    function shareResult() {
+      const playUrl = window.location.protocol === "http:" || window.location.protocol === "https:"
+        ? window.location.href
+        : "local build";
+      const text = `🏏 Cricket Hot & Cold #${DAY_NUM}\nI guessed ${SECRET.name} in ${guesses.length} tries.\n${getTrail()}\nScale: ⬛🟦🟨🟧🟥🟩\nPlay at: ${playUrl}`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const copied = document.getElementById("copiedMsg");
+        if (!copied) return;
+        copied.textContent = "Copied. Paste it wherever you want to brag.";
+        window.setTimeout(() => {
+          if (copied) copied.textContent = "";
+        }, 3000);
+      });
+    }
+
+    guessInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") makeGuess();
+    });
+
+    guessInput.addEventListener("input", function () {
+      const value = this.value.trim().toLowerCase();
+
+      if (!value || value.length < 2) {
+        dropdown.classList.add("hidden");
+        return;
+      }
+
+      const matches = PLAYERS.filter((player) => player.name.toLowerCase().includes(value)).slice(0, 7);
+      if (!matches.length) {
+        dropdown.classList.add("hidden");
+        return;
+      }
+
+      dropdown.innerHTML = matches.map((player) => {
+        const safeName = player.name.replace(/'/g, "\\'");
+        return `
+          <button type="button" class="dropdown-item" onclick="selectPlayer('${safeName}')">
+            <span class="font-medium text-slate-100">${escapeHtml(player.name)}</span>
+            <span class="text-xs uppercase tracking-[0.24em] text-slate-500">${escapeHtml(player.country)}</span>
+          </button>
+        `;
+      }).join("");
+
+      dropdown.classList.remove("hidden");
+    });
+
+    function selectPlayer(name) {
+      guessInput.value = name;
+      dropdown.classList.add("hidden");
+      guessInput.focus();
+    }
+
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".autocomplete")) {
+        dropdown.classList.add("hidden");
+      }
+    });
+
+    loadGame();
+    render();
+  </script>
 </body>
 </html>
