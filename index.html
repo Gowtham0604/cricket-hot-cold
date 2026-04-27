@@ -31,6 +31,11 @@
   </script>
   <style type="text/tailwindcss">
     @layer base {
+      :root {
+        --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+        --font-body: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      }
+
       html {
         color-scheme: light;
       }
@@ -41,6 +46,7 @@
 
       body {
         @apply min-h-screen bg-club-cream text-slate-900 antialiased selection:bg-amber-200 selection:text-slate-950;
+        font-family: var(--font-body);
         background-image:
           radial-gradient(circle at top, rgba(29, 78, 66, 0.09), transparent 30%),
           radial-gradient(circle at 14% 18%, rgba(198, 146, 45, 0.12), transparent 24%),
@@ -236,6 +242,34 @@
       .micro-kicker {
         @apply text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-slate-500;
       }
+
+      .title-display {
+        font-family: var(--font-display);
+      }
+
+      .score-card {
+        @apply rounded-[1.5rem] border border-white/70 bg-white/70 p-4 shadow-lg shadow-stone-900/5 backdrop-blur;
+      }
+
+      .board-shell {
+        @apply rounded-[1.75rem] border border-stone-200 bg-white/80 p-5 shadow-panel backdrop-blur-2xl sm:p-6;
+      }
+
+      .guide-card {
+        @apply rounded-[1.5rem] border border-stone-200 bg-white/70 p-5 shadow-lg shadow-stone-900/5 backdrop-blur;
+      }
+
+      .compact-note {
+        @apply text-xs font-semibold uppercase tracking-[0.24em] text-slate-500;
+      }
+
+      .quick-tip {
+        @apply flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3 text-sm text-slate-700;
+      }
+
+      .quick-tip-badge {
+        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-900 text-xs font-semibold text-white;
+      }
     }
 
     @layer utilities {
@@ -269,10 +303,10 @@
   </style>
 </head>
 <body>
-  <main class="relative mx-auto min-h-screen w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+  <main class="relative mx-auto min-h-screen w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
     <section class="hero-shell glass-grid field-lines">
-      <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_23rem] lg:gap-10">
-        <div class="space-y-8">
+      <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_20rem] lg:gap-8">
+        <div class="space-y-6">
           <div class="flex flex-wrap items-center gap-3">
             <div
               id="dayBadge"
@@ -285,146 +319,116 @@
             <div class="info-chip">One secret player</div>
           </div>
 
-          <div class="space-y-4">
-            <p class="eyebrow">Editorial Cricket Puzzle</p>
-            <h1 class="max-w-4xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              A sharper daily guessing game for people who actually watch cricket.
+          <div class="space-y-3">
+            <p class="eyebrow">Daily Cricket Puzzle</p>
+            <h1 class="title-display max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
+              Guess today&apos;s cricketer.
             </h1>
             <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-              Every guess reveals real signal. Country, role, era, batting hand, and format affinity all move the
-              temperature, so the board feels less random and more like a proper read of the sport.
+              One name is hiding. The closer your read, the hotter the board gets.
             </p>
           </div>
 
-          <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_17rem]">
-            <div class="input-shell">
-              <div class="relative z-10">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <div class="micro-kicker">Player Search</div>
-                    <div class="mt-1 text-sm text-slate-700" id="statusText">Open with your first guess.</div>
-                  </div>
-                  <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Enter to submit</div>
-                </div>
-
-                <div id="errMsg" class="mt-4 min-h-5 text-sm text-rose-700"></div>
-                <div class="mt-2 flex flex-col gap-3 sm:flex-row">
-                  <div class="autocomplete relative flex-1">
-                    <label for="guessInput" class="sr-only">Guess a cricketer</label>
-                    <input
-                      type="text"
-                      id="guessInput"
-                      placeholder="e.g. Virat Kohli, Joe Root..."
-                      autocomplete="off"
-                      class="w-full rounded-[1.1rem] border border-stone-200 bg-white px-4 py-4 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-200"
-                    />
-                    <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">⌕</div>
-                    <div id="dropdown" class="dropdown-panel hidden"></div>
-                  </div>
-                  <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Make Guess</button>
-                </div>
-                <p class="mt-3 text-xs text-slate-500">
-                  Autocomplete opens after two letters. Press Enter to stay in flow.
-                </p>
-              </div>
-            </div>
-
-            <div class="hero-crest">
-              <div class="relative z-10 flex h-full flex-col justify-between gap-6">
+          <div class="input-shell">
+            <div class="relative z-10">
+              <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <div class="micro-kicker">Current Heat</div>
-                  <div class="mt-3 flex items-end gap-3">
-                    <span class="text-5xl leading-none" id="tempDisplay">🧊</span>
-                    <div>
-                      <div class="text-2xl font-semibold text-slate-950" id="tempLabel">Freezing</div>
-                      <div class="mt-1 text-sm text-slate-500">Latest guess state</div>
-                    </div>
-                  </div>
+                  <div class="micro-kicker">Make A Guess</div>
+                  <div class="mt-1 text-sm text-slate-700" id="statusText">Take your first swing.</div>
                 </div>
-                <div class="space-y-2">
-                  <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Board Tempo</div>
-                  <div class="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                  <div class="text-sm leading-6 text-slate-600">
-                    Precision matters more than volume once the board turns warm.
-                  </div>
-                </div>
+                <div class="compact-note">Press enter</div>
               </div>
+
+              <div id="errMsg" class="mt-4 min-h-5 text-sm text-rose-700"></div>
+              <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+                <div class="autocomplete relative flex-1">
+                  <label for="guessInput" class="sr-only">Guess a cricketer</label>
+                  <input
+                    type="text"
+                    id="guessInput"
+                    placeholder="Virat Kohli, Joe Root..."
+                    autocomplete="off"
+                    class="w-full rounded-[1.1rem] border border-stone-200 bg-white px-4 py-4 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-200"
+                  />
+                  <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">⌕</div>
+                  <div id="dropdown" class="dropdown-panel hidden"></div>
+                </div>
+                <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Guess</button>
+              </div>
+              <p class="mt-3 text-xs text-slate-500">Type two letters for autocomplete.</p>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="score-card">
+              <div class="micro-kicker">Guesses</div>
+              <div class="mt-2 text-4xl font-semibold text-slate-950" id="guessCount">0</div>
+            </div>
+            <div class="score-card">
+              <div class="micro-kicker">Best Read</div>
+              <div class="mt-2 text-4xl font-semibold text-slate-950" id="bestScore">—</div>
+            </div>
+            <div class="score-card">
+              <div class="micro-kicker">Latest</div>
+              <div class="mt-2 text-sm leading-6 text-slate-600" id="latestGuessMeta">No guesses yet.</div>
             </div>
           </div>
         </div>
 
-        <aside class="flex flex-col justify-between gap-8">
-          <div class="space-y-5">
-            <div class="micro-kicker">Today&apos;s Dossier</div>
-            <div class="space-y-4 border-t border-stone-200 pt-5">
-              <div class="side-rule">
-                <div>
-                  <div class="text-sm font-medium text-slate-950">Hint Progress</div>
-                  <div class="mt-1 text-sm text-slate-500">Clues unlock in measured steps.</div>
-                </div>
-                <div class="text-right">
-                  <div class="text-2xl font-semibold text-slate-950" id="hintLevel">1 / 5</div>
+        <aside class="space-y-4">
+          <div class="hero-crest">
+            <div class="relative z-10 space-y-6">
+              <div>
+                <div class="micro-kicker">Current Heat</div>
+                <div class="mt-3 flex items-end gap-3">
+                  <span class="text-5xl leading-none" id="tempDisplay">🧊</span>
+                  <div>
+                    <div class="title-display text-3xl font-semibold text-slate-950" id="tempLabel">Freezing</div>
+                    <div class="mt-1 text-sm text-slate-500">Follow the warmer lane.</div>
+                  </div>
                 </div>
               </div>
-              <div class="side-rule">
-                <div>
-                  <div class="text-sm font-medium text-slate-950">Player Pool</div>
-                  <div class="mt-1 text-sm text-slate-500">International names only.</div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-2xl border border-white/70 bg-white/70 p-4">
+                  <div class="compact-note">Hints</div>
+                  <div class="mt-2 text-2xl font-semibold text-slate-950" id="hintLevel">1 / 5</div>
                 </div>
-                <div class="text-right text-2xl font-semibold text-slate-950" id="playerPool">0</div>
-              </div>
-              <div class="side-rule">
-                <div>
-                  <div class="text-sm font-medium text-slate-950">Best Read</div>
-                  <div class="mt-1 text-sm text-slate-500">Your hottest line so far.</div>
+                <div class="rounded-2xl border border-white/70 bg-white/70 p-4">
+                  <div class="compact-note">Pool</div>
+                  <div class="mt-2 text-2xl font-semibold text-slate-950" id="playerPool">0</div>
                 </div>
-                <div class="text-right text-2xl font-semibold text-slate-950" id="sideBestScore">—</div>
+                <div class="rounded-2xl border border-white/70 bg-white/70 p-4 col-span-2">
+                  <div class="compact-note">Top Score</div>
+                  <div class="mt-2 text-2xl font-semibold text-slate-950" id="sideBestScore">—</div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="space-y-5">
-            <div class="micro-kicker">Heat Model</div>
-            <div class="flex flex-wrap gap-2">
+          <div class="guide-card">
+            <div class="micro-kicker">Signals</div>
+            <div class="mt-4 flex flex-wrap gap-2">
               <span class="info-chip">Country</span>
               <span class="info-chip">Role</span>
               <span class="info-chip">Era</span>
-              <span class="info-chip">Batting hand</span>
+              <span class="info-chip">Batting</span>
               <span class="info-chip">Format</span>
-              <span class="info-chip">Career shape</span>
             </div>
-            <p class="text-sm leading-7 text-slate-600">
-              The board rewards structural closeness, so thoughtful guesses surface better clues than random legends.
-            </p>
           </div>
         </aside>
       </div>
-
-      <div class="relative z-10 mt-8 grid gap-2 border-t border-stone-200 pt-5 md:grid-cols-3 md:gap-0">
-        <div class="metric-segment">
-          <div class="micro-kicker">Guesses</div>
-          <div class="mt-2 text-4xl font-semibold text-slate-950" id="guessCount">0</div>
-        </div>
-        <div class="metric-segment">
-          <div class="micro-kicker">Best Read</div>
-          <div class="mt-2 text-4xl font-semibold text-slate-950" id="bestScore">—</div>
-        </div>
-        <div class="metric-segment">
-          <div class="micro-kicker">Board Feed</div>
-          <div class="mt-2 text-sm leading-7 text-slate-600" id="latestGuessMeta">No guesses yet.</div>
-        </div>
-      </div>
     </section>
 
-    <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <section class="min-w-0">
-        <section class="section-band pt-0">
+    <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <section class="min-w-0 space-y-6">
+        <section class="board-shell">
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Temperature Rail</div>
-              <h2 class="mt-2 text-2xl font-semibold text-slate-950">Read the board, then narrow your lane.</h2>
+              <h2 class="title-display mt-2 text-3xl font-semibold text-slate-950">Read the heat.</h2>
             </div>
-            <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Freezing to Volcanic</div>
+            <div class="compact-note">0 to 100</div>
           </div>
 
           <div class="mt-5 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
@@ -447,90 +451,70 @@
             <span>0%</span>
             <span>100%</span>
           </div>
-        </section>
 
-        <section class="section-band">
-          <div class="hint-shell" id="hintBox">
-            <strong>Hint:</strong> A famous international cricketer is hiding here.
+          <div class="mt-5 hint-shell" id="hintBox">
+            <strong>Hint:</strong> An international cricketer is hiding here.
           </div>
         </section>
 
-        <section class="section-band">
+        <section class="board-shell">
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Guess Board</div>
-              <h2 class="mt-2 text-2xl font-semibold text-slate-950">Every guess should teach you something.</h2>
+              <h2 class="title-display mt-2 text-3xl font-semibold text-slate-950">Guess history.</h2>
             </div>
-            <div class="text-sm text-slate-500">Closest guesses float to the top.</div>
+            <div class="compact-note">Hottest first</div>
           </div>
 
           <div
             id="emptyState"
             class="mt-6 rounded-[1.5rem] border border-dashed border-stone-300 bg-white/60 px-6 py-12 text-center text-sm text-slate-500"
           >
-            Your board is empty. Start with any international cricketer you know.
+            Start with any international cricketer.
           </div>
           <div id="guessList" class="mt-6 space-y-3"></div>
+          <div id="winBox" class="mt-6"></div>
         </section>
-
-        <div id="winBox" class="section-band"></div>
-
-        <footer class="section-band flex flex-wrap items-center justify-between gap-3 pb-0 text-xs text-slate-500">
-          <span>New cricketer every day</span>
-          <span>Built for cricket fans who like a little theatre in their puzzle games</span>
-        </footer>
       </section>
 
-      <aside class="space-y-8">
-        <section class="section-band pt-0">
-          <div class="eyebrow">How To Hunt</div>
-          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-600">
-            <div class="side-rule">
-              <div>
-                <div class="text-sm font-medium text-slate-950">Start Broad</div>
-                <div class="mt-1 text-slate-500">Lead with an active star to test country and era quickly.</div>
-              </div>
+      <aside class="space-y-4">
+        <section class="guide-card">
+          <div class="eyebrow">Play Fast</div>
+          <div class="mt-4 space-y-3">
+            <div class="quick-tip">
+              <span class="quick-tip-badge">1</span>
+              <span>Start broad.</span>
             </div>
-            <div class="side-rule">
-              <div>
-                <div class="text-sm font-medium text-slate-950">Then Pivot</div>
-                <div class="mt-1 text-slate-500">When the board gets warm, shift by role before you chase exact names.</div>
-              </div>
+            <div class="quick-tip">
+              <span class="quick-tip-badge">2</span>
+              <span>Follow the heat.</span>
             </div>
-            <div class="side-rule">
-              <div>
-                <div class="text-sm font-medium text-slate-950">Finish Clean</div>
-                <div class="mt-1 text-slate-500">A hot signal is usually about archetype before it becomes identity.</div>
-              </div>
+            <div class="quick-tip">
+              <span class="quick-tip-badge">3</span>
+              <span>Clue every three.</span>
             </div>
           </div>
         </section>
 
-        <section class="section-band">
+        <section class="guide-card">
           <div class="eyebrow">Board Notes</div>
-          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-600">
-            <div class="side-rule">
-              <div>
-                <div class="text-sm font-medium text-slate-950">One puzzle per day</div>
-                <div class="mt-1 text-slate-500">Your progress persists locally for the current board.</div>
-              </div>
+          <div class="mt-4 space-y-3 text-sm text-slate-600">
+            <div class="quick-tip">
+              <span class="quick-tip-badge">D</span>
+              <span>New board daily.</span>
             </div>
-            <div class="side-rule">
-              <div>
-                <div class="text-sm font-medium text-slate-950">Signal over chaos</div>
-                <div class="mt-1 text-slate-500">The board is tuned to reward informed cricket intuition.</div>
-              </div>
-            </div>
-            <div class="side-rule">
-              <div>
-                <div class="text-sm font-medium text-slate-950">Share the path</div>
-                <div class="mt-1 text-slate-500">Once solved, copy your trail and show how tidy the read was.</div>
-              </div>
+            <div class="quick-tip">
+              <span class="quick-tip-badge">S</span>
+              <span>Progress saves here.</span>
             </div>
           </div>
         </section>
       </aside>
     </div>
+
+    <footer class="mt-6 pb-2 text-center text-xs text-slate-500">
+      New board daily.
+    </footer>
   </main>
 
   <script>
@@ -775,20 +759,20 @@
     }
 
     function getStatusCopy(score) {
-      if (score >= 96) return "You are basically on top of it.";
-      if (score >= 80) return "Very close. Stay in the same lane.";
-      if (score >= 65) return "Hot read. Fine-tune the name.";
-      if (score >= 50) return "Warm. The board likes this direction.";
-      if (score >= 35) return "Some signal. Try a role or era pivot.";
-      if (score >= 20) return "Cold, but not useless.";
-      return "Freezing. Change country or player archetype.";
+      if (score >= 96) return "One more sharp guess.";
+      if (score >= 80) return "Very close. Stay in that lane.";
+      if (score >= 65) return "Hot. Tighten the name.";
+      if (score >= 50) return "Warm. Keep following it.";
+      if (score >= 35) return "Some signal. Pivot lightly.";
+      if (score >= 20) return "Cold, but useful.";
+      return "Freezing. Switch the archetype.";
     }
 
     function setSolvedState() {
       guessInput.disabled = won;
       guessBtn.disabled = won;
-      guessBtn.textContent = won ? "Solved" : "Make Guess";
-      guessInput.placeholder = won ? "Daily puzzle solved." : "e.g. Virat Kohli, Joe Root...";
+      guessBtn.textContent = won ? "Solved" : "Guess";
+      guessInput.placeholder = won ? "Puzzle solved." : "Virat Kohli, Joe Root...";
     }
 
     function saveGame() {
@@ -886,12 +870,20 @@
             ${guess.isCorrect ? "✅" : EMOJIS[emojiIndex]}
           </div>
           <div class="min-w-0 flex-1">
-            <div class="truncate text-sm font-semibold text-slate-950 sm:text-base">${escapeHtml(guess.name)}</div>
-            <div class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">${escapeHtml(guess.country)}</div>
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="truncate text-sm font-semibold text-slate-950 sm:text-base">${escapeHtml(guess.name)}</div>
+                <div class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">${escapeHtml(guess.country)}</div>
+              </div>
+              <div class="shrink-0 rounded-full border border-white/80 bg-white/80 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-slate-600">${label}</div>
+            </div>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-white/70">
+              <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-orange-500" style="width:${guess.isCorrect ? 100 : guess.sim}%"></div>
+            </div>
           </div>
           <div class="text-right">
             <div class="text-lg font-semibold text-slate-950">${guess.isCorrect ? "100%" : `${guess.sim}%`}</div>
-            <div class="text-[0.7rem] uppercase tracking-[0.24em] text-slate-500">${label}</div>
+            <div class="text-[0.7rem] uppercase tracking-[0.24em] text-slate-500">Match</div>
           </div>
         </div>
       `;
@@ -899,11 +891,11 @@
 
     function updateHint() {
       const hints = [
-        "A famous international cricketer is hiding here.",
-        `This cricketer is from <strong>${SECRET.country}</strong>.`,
+        "An international cricketer is hiding here.",
+        `Country: <strong>${SECRET.country}</strong>.`,
         `Role: <strong>${SECRET.role}</strong>.`,
-        `Era: <strong>${SECRET.era === "legend" ? "Legendary — retired or hall of fame" : "Current generation"}</strong>.`,
-        `Bats: <strong>${SECRET.batting}-handed</strong>.`,
+        `Era: <strong>${SECRET.era === "legend" ? "Legend" : "Modern"}</strong>.`,
+        `Batting hand: <strong>${SECRET.batting}</strong>.`,
       ];
 
       const hintIndex = Math.min(Math.floor(guesses.length / 3), hints.length - 1);
@@ -925,7 +917,7 @@
           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div class="micro-kicker text-emerald-700">Board Solved</div>
-              <div class="mt-3 text-3xl font-semibold text-slate-950">You got it — ${escapeHtml(SECRET.name)}!</div>
+              <div class="title-display mt-3 text-4xl font-semibold text-slate-950">${escapeHtml(SECRET.name)}</div>
               <div class="mt-2 text-sm leading-7 text-slate-600">
                 Solved in ${guesses.length} guess${guesses.length === 1 ? "" : "es"} • ${escapeHtml(SECRET.country)}
               </div>
@@ -954,7 +946,7 @@
       document.getElementById("sideBestScore").textContent = best === null ? "—" : `${best}%`;
       document.getElementById("tempDisplay").textContent = latest ? (latest.isCorrect ? "✅" : EMOJIS[emojiIndex]) : "🧊";
       document.getElementById("tempLabel").textContent = latest ? (latest.isCorrect ? "Solved" : getHeatLabel(latest.sim)) : "Freezing";
-      document.getElementById("statusText").textContent = latest ? getStatusCopy(latestScore) : "Open with your first guess.";
+      document.getElementById("statusText").textContent = latest ? getStatusCopy(latestScore) : "Take your first swing.";
       document.getElementById("latestGuessMeta").textContent = latest
         ? `${latest.name} · ${latest.isCorrect ? "100%" : `${latest.sim}%`} ${latest.isCorrect ? "Solved" : getHeatLabel(latest.sim)}`
         : "No guesses yet.";
@@ -979,7 +971,7 @@
       navigator.clipboard.writeText(text).then(() => {
         const copied = document.getElementById("copiedMsg");
         if (!copied) return;
-        copied.textContent = "Copied. Paste it wherever you want to brag.";
+        copied.textContent = "Copied to clipboard.";
         window.setTimeout(() => {
           if (copied) copied.textContent = "";
         }, 3000);
