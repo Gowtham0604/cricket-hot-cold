@@ -14,14 +14,16 @@
       theme: {
         extend: {
           colors: {
-            pitch: {
-              950: "#07111f",
-              900: "#0a1628",
-              800: "#132238"
+            club: {
+              cream: "#f7f3ea",
+              parchment: "#fbf8f2",
+              ink: "#17212f",
+              forest: "#1d4d42",
+              gold: "#c6922d"
             }
           },
           boxShadow: {
-            panel: "0 24px 80px rgba(2, 6, 23, 0.45)"
+            panel: "0 28px 90px rgba(119, 95, 43, 0.12)"
           }
         }
       }
@@ -30,7 +32,7 @@
   <style type="text/tailwindcss">
     @layer base {
       html {
-        color-scheme: dark;
+        color-scheme: light;
       }
 
       * {
@@ -38,15 +40,16 @@
       }
 
       body {
-        @apply min-h-screen bg-pitch-950 text-slate-100 antialiased selection:bg-amber-300/30 selection:text-white;
+        @apply min-h-screen bg-club-cream text-slate-900 antialiased selection:bg-amber-200 selection:text-slate-950;
         background-image:
-          radial-gradient(circle at top, rgba(34, 211, 238, 0.12), transparent 30%),
-          radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.14), transparent 28%),
-          linear-gradient(180deg, #040816 0%, #07111f 34%, #07131f 62%, #050914 100%);
+          radial-gradient(circle at top, rgba(29, 78, 66, 0.09), transparent 30%),
+          radial-gradient(circle at 14% 18%, rgba(198, 146, 45, 0.12), transparent 24%),
+          radial-gradient(circle at 85% 12%, rgba(56, 189, 248, 0.08), transparent 18%),
+          linear-gradient(180deg, #fcfaf5 0%, #f7f3ea 38%, #f4efe3 100%);
       }
 
       strong {
-        @apply font-semibold text-white;
+        @apply font-semibold text-emerald-950;
       }
 
       #winBox:empty {
@@ -59,10 +62,9 @@
         inset: 0;
         pointer-events: none;
         background:
-          radial-gradient(circle at 50% -8%, rgba(255, 255, 255, 0.16), transparent 18%),
-          radial-gradient(circle at 15% 12%, rgba(56, 189, 248, 0.08), transparent 22%),
-          radial-gradient(circle at 84% 16%, rgba(251, 191, 36, 0.08), transparent 18%);
-        mix-blend-mode: screen;
+          radial-gradient(circle at 50% -8%, rgba(255, 255, 255, 0.82), transparent 18%),
+          radial-gradient(circle at 15% 12%, rgba(29, 78, 66, 0.05), transparent 22%),
+          radial-gradient(circle at 84% 16%, rgba(198, 146, 45, 0.08), transparent 18%);
       }
 
       body::after {
@@ -76,16 +78,16 @@
         pointer-events: none;
         border-radius: 9999px;
         background:
-          radial-gradient(circle at 50% 20%, rgba(34, 197, 94, 0.22), transparent 46%),
-          linear-gradient(180deg, rgba(34, 197, 94, 0), rgba(13, 148, 136, 0.12));
+          radial-gradient(circle at 50% 20%, rgba(34, 197, 94, 0.14), transparent 46%),
+          linear-gradient(180deg, rgba(34, 197, 94, 0), rgba(198, 146, 45, 0.08));
         filter: blur(36px);
-        opacity: 0.7;
+        opacity: 0.5;
       }
     }
 
     @layer components {
       .hero-shell {
-        @apply relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] px-5 py-6 shadow-panel backdrop-blur-2xl sm:px-8 sm:py-8;
+        @apply relative overflow-hidden rounded-[2rem] border border-stone-200 bg-white/80 px-5 py-6 shadow-panel backdrop-blur-2xl sm:px-8 sm:py-8;
       }
 
       .hero-shell::before {
@@ -94,12 +96,12 @@
         inset: 0;
         pointer-events: none;
         background:
-          radial-gradient(circle at 80% 18%, rgba(251, 191, 36, 0.18), transparent 22%),
-          linear-gradient(135deg, rgba(255, 255, 255, 0.09), transparent 38%);
+          radial-gradient(circle at 80% 18%, rgba(198, 146, 45, 0.16), transparent 22%),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent 38%);
       }
 
       .hero-crest {
-        @apply relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950/35 p-5;
+        @apply relative overflow-hidden rounded-[1.75rem] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/70 to-amber-50 p-5;
       }
 
       .hero-crest::before {
@@ -107,7 +109,7 @@
         position: absolute;
         inset: 1rem;
         border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(29, 78, 66, 0.10);
       }
 
       .hero-crest::after {
@@ -119,15 +121,15 @@
         height: 18rem;
         transform: translateX(-50%);
         border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(198, 146, 45, 0.16);
       }
 
       .section-band {
-        @apply border-t border-white/10 py-6;
+        @apply border-t border-stone-200 py-6;
       }
 
       .metric-segment {
-        @apply border-white/10 px-0 py-3 md:px-5;
+        @apply border-stone-200 px-0 py-3 md:px-5;
       }
 
       .metric-segment + .metric-segment {
@@ -135,7 +137,7 @@
       }
 
       .input-shell {
-        @apply relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950/55 p-4 shadow-2xl shadow-black/20;
+        @apply relative overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white/90 p-4 shadow-2xl shadow-amber-900/10;
       }
 
       .input-shell::before {
@@ -143,27 +145,27 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        background: linear-gradient(90deg, rgba(251, 191, 36, 0.08), transparent 32%, rgba(34, 211, 238, 0.08));
+        background: linear-gradient(90deg, rgba(198, 146, 45, 0.10), transparent 32%, rgba(29, 78, 66, 0.06));
       }
 
       .scale-item {
-        @apply flex h-14 w-full items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-xl opacity-40 transition duration-300;
+        @apply flex h-14 w-full items-center justify-center rounded-2xl border border-stone-200 bg-white/70 text-xl opacity-45 transition duration-300;
       }
 
       .scale-item.active {
-        @apply scale-[1.02] border-amber-300/60 bg-amber-300/15 opacity-100 shadow-lg shadow-amber-500/20;
+        @apply scale-[1.02] border-amber-500/60 bg-amber-50 opacity-100 shadow-lg shadow-amber-500/15;
       }
 
       .hint-shell {
-        @apply rounded-[1.5rem] border border-amber-300/20 bg-amber-300/10 px-5 py-4 text-sm leading-6 text-amber-50;
+        @apply rounded-[1.5rem] border border-amber-300/60 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-950;
       }
 
       .dropdown-panel {
-        @apply absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 max-h-72 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-black/40 backdrop-blur-xl;
+        @apply absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 max-h-72 overflow-y-auto rounded-2xl border border-stone-200 bg-white/95 shadow-2xl shadow-stone-900/10 backdrop-blur-xl;
       }
 
       .dropdown-item {
-        @apply flex w-full items-center justify-between gap-4 border-b border-white/5 px-4 py-3 text-left transition hover:bg-white/[0.08];
+        @apply flex w-full items-center justify-between gap-4 border-b border-stone-100 px-4 py-3 text-left transition hover:bg-amber-50;
       }
 
       .dropdown-item:last-child {
@@ -171,60 +173,60 @@
       }
 
       .guess-row {
-        @apply flex items-center gap-4 rounded-[1.5rem] border px-4 py-4 shadow-lg shadow-black/10;
+        @apply flex items-center gap-4 rounded-[1.5rem] border bg-white/80 px-4 py-4 shadow-lg shadow-stone-900/5;
         animation: rise-in 220ms ease;
       }
 
       .guess-tier-0 {
-        @apply border-sky-500/20 bg-sky-500/[0.08];
+        @apply border-sky-200 bg-sky-50;
       }
 
       .guess-tier-1 {
-        @apply border-cyan-400/20 bg-cyan-400/[0.08];
+        @apply border-cyan-200 bg-cyan-50;
       }
 
       .guess-tier-2 {
-        @apply border-teal-400/20 bg-teal-400/[0.08];
+        @apply border-teal-200 bg-teal-50;
       }
 
       .guess-tier-3 {
-        @apply border-amber-300/20 bg-amber-300/[0.08];
+        @apply border-amber-200 bg-amber-50;
       }
 
       .guess-tier-4 {
-        @apply border-orange-400/20 bg-orange-400/[0.08];
+        @apply border-orange-200 bg-orange-50;
       }
 
       .guess-tier-5 {
-        @apply border-rose-400/20 bg-rose-400/[0.08];
+        @apply border-rose-200 bg-rose-50;
       }
 
       .guess-tier-6 {
-        @apply border-fuchsia-400/25 bg-fuchsia-400/[0.10];
+        @apply border-violet-200 bg-violet-50;
       }
 
       .guess-tier-win {
-        @apply border-emerald-400/25 bg-emerald-400/[0.10];
+        @apply border-emerald-300 bg-emerald-50;
       }
 
       .primary-button {
-        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-amber-200/60 bg-gradient-to-r from-amber-200 via-amber-300 to-orange-400 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-orange-500/20 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-orange-500/30 focus:outline-none focus:ring-2 focus:ring-amber-200/70 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
+        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-amber-300 bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 px-5 py-3 text-sm font-semibold text-stone-950 shadow-lg shadow-amber-500/15 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
       }
 
       .secondary-button {
-        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-white/10 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-white/30;
+        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200;
       }
 
       .eyebrow {
-        @apply text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-400;
+        @apply text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-emerald-700;
       }
 
       .info-chip {
-        @apply rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-medium text-slate-200;
+        @apply rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-slate-700;
       }
 
       .side-rule {
-        @apply flex items-start justify-between gap-4 border-t border-white/10 py-4;
+        @apply flex items-start justify-between gap-4 border-t border-stone-200 py-4;
       }
 
       .side-rule:first-child {
@@ -239,17 +241,17 @@
     @layer utilities {
       .glass-grid {
         background-image:
-          linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+          linear-gradient(rgba(22, 36, 53, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(22, 36, 53, 0.05) 1px, transparent 1px);
         background-size: 36px 36px;
         background-position: -1px -1px;
       }
 
       .field-lines {
         background:
-          radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.08) 0, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-          radial-gradient(circle at 50% 58%, transparent 0 6rem, rgba(255, 255, 255, 0.08) 6rem, rgba(255, 255, 255, 0.08) 6.08rem, transparent 6.08rem),
-          radial-gradient(circle at 50% 58%, transparent 0 11rem, rgba(255, 255, 255, 0.06) 11rem, rgba(255, 255, 255, 0.06) 11.08rem, transparent 11.08rem);
+          radial-gradient(circle at 50% 55%, rgba(29, 78, 66, 0.08) 0, rgba(29, 78, 66, 0.08) 1px, transparent 1px),
+          radial-gradient(circle at 50% 58%, transparent 0 6rem, rgba(29, 78, 66, 0.08) 6rem, rgba(29, 78, 66, 0.08) 6.08rem, transparent 6.08rem),
+          radial-gradient(circle at 50% 58%, transparent 0 11rem, rgba(198, 146, 45, 0.08) 11rem, rgba(198, 146, 45, 0.08) 11.08rem, transparent 11.08rem);
       }
     }
 
@@ -274,7 +276,7 @@
           <div class="flex flex-wrap items-center gap-3">
             <div
               id="dayBadge"
-              class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-200"
+              class="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-700"
             >
               <span>🏏</span>
               <span>Cricket Hot &amp; Cold</span>
@@ -285,10 +287,10 @@
 
           <div class="space-y-4">
             <p class="eyebrow">Editorial Cricket Puzzle</p>
-            <h1 class="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 class="max-w-4xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
               A sharper daily guessing game for people who actually watch cricket.
             </h1>
-            <p class="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+            <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
               Every guess reveals real signal. Country, role, era, batting hand, and format affinity all move the
               temperature, so the board feels less random and more like a proper read of the sport.
             </p>
@@ -300,12 +302,12 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <div class="micro-kicker">Player Search</div>
-                    <div class="mt-1 text-sm text-slate-300" id="statusText">Open with your first guess.</div>
+                    <div class="mt-1 text-sm text-slate-700" id="statusText">Open with your first guess.</div>
                   </div>
                   <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Enter to submit</div>
                 </div>
 
-                <div id="errMsg" class="mt-4 min-h-5 text-sm text-rose-300"></div>
+                <div id="errMsg" class="mt-4 min-h-5 text-sm text-rose-700"></div>
                 <div class="mt-2 flex flex-col gap-3 sm:flex-row">
                   <div class="autocomplete relative flex-1">
                     <label for="guessInput" class="sr-only">Guess a cricketer</label>
@@ -314,14 +316,14 @@
                       id="guessInput"
                       placeholder="e.g. Virat Kohli, Joe Root..."
                       autocomplete="off"
-                      class="w-full rounded-[1.1rem] border border-white/10 bg-white/[0.07] px-4 py-4 pr-12 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/50 focus:bg-white/[0.10] focus:ring-2 focus:ring-amber-200/20"
+                      class="w-full rounded-[1.1rem] border border-stone-200 bg-white px-4 py-4 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-200"
                     />
-                    <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-500">⌕</div>
+                    <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">⌕</div>
                     <div id="dropdown" class="dropdown-panel hidden"></div>
                   </div>
                   <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Make Guess</button>
                 </div>
-                <p class="mt-3 text-xs text-slate-400">
+                <p class="mt-3 text-xs text-slate-500">
                   Autocomplete opens after two letters. Press Enter to stay in flow.
                 </p>
               </div>
@@ -334,15 +336,15 @@
                   <div class="mt-3 flex items-end gap-3">
                     <span class="text-5xl leading-none" id="tempDisplay">🧊</span>
                     <div>
-                      <div class="text-2xl font-semibold text-white" id="tempLabel">Freezing</div>
-                      <div class="mt-1 text-sm text-slate-400">Latest guess state</div>
+                      <div class="text-2xl font-semibold text-slate-950" id="tempLabel">Freezing</div>
+                      <div class="mt-1 text-sm text-slate-500">Latest guess state</div>
                     </div>
                   </div>
                 </div>
                 <div class="space-y-2">
                   <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Board Tempo</div>
                   <div class="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                  <div class="text-sm leading-6 text-slate-300">
+                  <div class="text-sm leading-6 text-slate-600">
                     Precision matters more than volume once the board turns warm.
                   </div>
                 </div>
@@ -354,29 +356,29 @@
         <aside class="flex flex-col justify-between gap-8">
           <div class="space-y-5">
             <div class="micro-kicker">Today&apos;s Dossier</div>
-            <div class="space-y-4 border-t border-white/10 pt-5">
+            <div class="space-y-4 border-t border-stone-200 pt-5">
               <div class="side-rule">
                 <div>
-                  <div class="text-sm font-medium text-white">Hint Progress</div>
-                  <div class="mt-1 text-sm text-slate-400">Clues unlock in measured steps.</div>
+                  <div class="text-sm font-medium text-slate-950">Hint Progress</div>
+                  <div class="mt-1 text-sm text-slate-500">Clues unlock in measured steps.</div>
                 </div>
                 <div class="text-right">
-                  <div class="text-2xl font-semibold text-white" id="hintLevel">1 / 5</div>
+                  <div class="text-2xl font-semibold text-slate-950" id="hintLevel">1 / 5</div>
                 </div>
               </div>
               <div class="side-rule">
                 <div>
-                  <div class="text-sm font-medium text-white">Player Pool</div>
-                  <div class="mt-1 text-sm text-slate-400">International names only.</div>
+                  <div class="text-sm font-medium text-slate-950">Player Pool</div>
+                  <div class="mt-1 text-sm text-slate-500">International names only.</div>
                 </div>
-                <div class="text-right text-2xl font-semibold text-white" id="playerPool">0</div>
+                <div class="text-right text-2xl font-semibold text-slate-950" id="playerPool">0</div>
               </div>
               <div class="side-rule">
                 <div>
-                  <div class="text-sm font-medium text-white">Best Read</div>
-                  <div class="mt-1 text-sm text-slate-400">Your hottest line so far.</div>
+                  <div class="text-sm font-medium text-slate-950">Best Read</div>
+                  <div class="mt-1 text-sm text-slate-500">Your hottest line so far.</div>
                 </div>
-                <div class="text-right text-2xl font-semibold text-white" id="sideBestScore">—</div>
+                <div class="text-right text-2xl font-semibold text-slate-950" id="sideBestScore">—</div>
               </div>
             </div>
           </div>
@@ -391,25 +393,25 @@
               <span class="info-chip">Format</span>
               <span class="info-chip">Career shape</span>
             </div>
-            <p class="text-sm leading-7 text-slate-300">
+            <p class="text-sm leading-7 text-slate-600">
               The board rewards structural closeness, so thoughtful guesses surface better clues than random legends.
             </p>
           </div>
         </aside>
       </div>
 
-      <div class="relative z-10 mt-8 grid gap-2 border-t border-white/10 pt-5 md:grid-cols-3 md:gap-0">
+      <div class="relative z-10 mt-8 grid gap-2 border-t border-stone-200 pt-5 md:grid-cols-3 md:gap-0">
         <div class="metric-segment">
           <div class="micro-kicker">Guesses</div>
-          <div class="mt-2 text-4xl font-semibold text-white" id="guessCount">0</div>
+          <div class="mt-2 text-4xl font-semibold text-slate-950" id="guessCount">0</div>
         </div>
         <div class="metric-segment">
           <div class="micro-kicker">Best Read</div>
-          <div class="mt-2 text-4xl font-semibold text-white" id="bestScore">—</div>
+          <div class="mt-2 text-4xl font-semibold text-slate-950" id="bestScore">—</div>
         </div>
         <div class="metric-segment">
           <div class="micro-kicker">Board Feed</div>
-          <div class="mt-2 text-sm leading-7 text-slate-300" id="latestGuessMeta">No guesses yet.</div>
+          <div class="mt-2 text-sm leading-7 text-slate-600" id="latestGuessMeta">No guesses yet.</div>
         </div>
       </div>
     </section>
@@ -420,7 +422,7 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Temperature Rail</div>
-              <h2 class="mt-2 text-2xl font-semibold text-white">Read the board, then narrow your lane.</h2>
+              <h2 class="mt-2 text-2xl font-semibold text-slate-950">Read the board, then narrow your lane.</h2>
             </div>
             <div class="text-xs uppercase tracking-[0.24em] text-slate-500">Freezing to Volcanic</div>
           </div>
@@ -435,10 +437,10 @@
             <span class="scale-item" title="Volcanic">🌋</span>
           </div>
 
-          <div class="mt-5 overflow-hidden rounded-full bg-white/[0.08]">
+          <div class="mt-5 overflow-hidden rounded-full bg-stone-200/70">
             <div
               id="heatBar"
-              class="h-3 w-0 rounded-full bg-gradient-to-r from-sky-400 via-amber-300 to-rose-400 transition-all duration-500"
+              class="h-3 w-0 rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-orange-500 transition-all duration-500"
             ></div>
           </div>
           <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
@@ -457,14 +459,14 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Guess Board</div>
-              <h2 class="mt-2 text-2xl font-semibold text-white">Every guess should teach you something.</h2>
+              <h2 class="mt-2 text-2xl font-semibold text-slate-950">Every guess should teach you something.</h2>
             </div>
-            <div class="text-sm text-slate-400">Closest guesses float to the top.</div>
+            <div class="text-sm text-slate-500">Closest guesses float to the top.</div>
           </div>
 
           <div
             id="emptyState"
-            class="mt-6 rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.03] px-6 py-12 text-center text-sm text-slate-400"
+            class="mt-6 rounded-[1.5rem] border border-dashed border-stone-300 bg-white/60 px-6 py-12 text-center text-sm text-slate-500"
           >
             Your board is empty. Start with any international cricketer you know.
           </div>
@@ -482,23 +484,23 @@
       <aside class="space-y-8">
         <section class="section-band pt-0">
           <div class="eyebrow">How To Hunt</div>
-          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-300">
+          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-600">
             <div class="side-rule">
               <div>
-                <div class="text-sm font-medium text-white">Start Broad</div>
-                <div class="mt-1 text-slate-400">Lead with an active star to test country and era quickly.</div>
+                <div class="text-sm font-medium text-slate-950">Start Broad</div>
+                <div class="mt-1 text-slate-500">Lead with an active star to test country and era quickly.</div>
               </div>
             </div>
             <div class="side-rule">
               <div>
-                <div class="text-sm font-medium text-white">Then Pivot</div>
-                <div class="mt-1 text-slate-400">When the board gets warm, shift by role before you chase exact names.</div>
+                <div class="text-sm font-medium text-slate-950">Then Pivot</div>
+                <div class="mt-1 text-slate-500">When the board gets warm, shift by role before you chase exact names.</div>
               </div>
             </div>
             <div class="side-rule">
               <div>
-                <div class="text-sm font-medium text-white">Finish Clean</div>
-                <div class="mt-1 text-slate-400">A hot signal is usually about archetype before it becomes identity.</div>
+                <div class="text-sm font-medium text-slate-950">Finish Clean</div>
+                <div class="mt-1 text-slate-500">A hot signal is usually about archetype before it becomes identity.</div>
               </div>
             </div>
           </div>
@@ -506,23 +508,23 @@
 
         <section class="section-band">
           <div class="eyebrow">Board Notes</div>
-          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-300">
+          <div class="mt-4 space-y-5 text-sm leading-7 text-slate-600">
             <div class="side-rule">
               <div>
-                <div class="text-sm font-medium text-white">One puzzle per day</div>
-                <div class="mt-1 text-slate-400">Your progress persists locally for the current board.</div>
+                <div class="text-sm font-medium text-slate-950">One puzzle per day</div>
+                <div class="mt-1 text-slate-500">Your progress persists locally for the current board.</div>
               </div>
             </div>
             <div class="side-rule">
               <div>
-                <div class="text-sm font-medium text-white">Signal over chaos</div>
-                <div class="mt-1 text-slate-400">The board is tuned to reward informed cricket intuition.</div>
+                <div class="text-sm font-medium text-slate-950">Signal over chaos</div>
+                <div class="mt-1 text-slate-500">The board is tuned to reward informed cricket intuition.</div>
               </div>
             </div>
             <div class="side-rule">
               <div>
-                <div class="text-sm font-medium text-white">Share the path</div>
-                <div class="mt-1 text-slate-400">Once solved, copy your trail and show how tidy the read was.</div>
+                <div class="text-sm font-medium text-slate-950">Share the path</div>
+                <div class="mt-1 text-slate-500">Once solved, copy your trail and show how tidy the read was.</div>
               </div>
             </div>
           </div>
@@ -880,16 +882,16 @@
 
       return `
         <div class="guess-row ${tierClass}">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-slate-950/35 text-2xl">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-stone-200 bg-white/75 text-2xl">
             ${guess.isCorrect ? "✅" : EMOJIS[emojiIndex]}
           </div>
           <div class="min-w-0 flex-1">
-            <div class="truncate text-sm font-semibold text-white sm:text-base">${escapeHtml(guess.name)}</div>
-            <div class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">${escapeHtml(guess.country)}</div>
+            <div class="truncate text-sm font-semibold text-slate-950 sm:text-base">${escapeHtml(guess.name)}</div>
+            <div class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">${escapeHtml(guess.country)}</div>
           </div>
           <div class="text-right">
-            <div class="text-lg font-semibold text-white">${guess.isCorrect ? "100%" : `${guess.sim}%`}</div>
-            <div class="text-[0.7rem] uppercase tracking-[0.24em] text-slate-400">${label}</div>
+            <div class="text-lg font-semibold text-slate-950">${guess.isCorrect ? "100%" : `${guess.sim}%`}</div>
+            <div class="text-[0.7rem] uppercase tracking-[0.24em] text-slate-500">${label}</div>
           </div>
         </div>
       `;
@@ -919,20 +921,20 @@
     function showWin() {
       won = true;
       document.getElementById("winBox").innerHTML = `
-        <div class="overflow-hidden rounded-[1.75rem] border border-emerald-400/20 bg-gradient-to-br from-emerald-400/[0.14] via-emerald-400/[0.06] to-cyan-400/[0.08] p-6 shadow-2xl shadow-emerald-950/20">
+        <div class="overflow-hidden rounded-[1.75rem] border border-emerald-300 bg-gradient-to-br from-white via-emerald-50 to-amber-50 p-6 shadow-2xl shadow-amber-900/10">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div class="micro-kicker text-emerald-200/70">Board Solved</div>
-              <div class="mt-3 text-3xl font-semibold text-white">You got it — ${escapeHtml(SECRET.name)}!</div>
-              <div class="mt-2 text-sm leading-7 text-emerald-100/80">
+              <div class="micro-kicker text-emerald-700">Board Solved</div>
+              <div class="mt-3 text-3xl font-semibold text-slate-950">You got it — ${escapeHtml(SECRET.name)}!</div>
+              <div class="mt-2 text-sm leading-7 text-slate-600">
                 Solved in ${guesses.length} guess${guesses.length === 1 ? "" : "es"} • ${escapeHtml(SECRET.country)}
               </div>
             </div>
             <div class="text-5xl">🏆</div>
           </div>
-          <div class="mt-5 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-          <div class="mt-5 break-all text-2xl tracking-[0.3em] text-white">${getTrail()}</div>
-          <div class="mt-3 min-h-5 text-sm text-emerald-200" id="copiedMsg"></div>
+          <div class="mt-5 h-px bg-gradient-to-r from-transparent via-emerald-300/60 to-transparent"></div>
+          <div class="mt-5 break-all text-2xl tracking-[0.3em] text-slate-950">${getTrail()}</div>
+          <div class="mt-3 min-h-5 text-sm text-emerald-700" id="copiedMsg"></div>
           <div class="mt-5 flex flex-wrap gap-3">
             <button class="secondary-button" onclick="shareResult()">Copy Result</button>
           </div>
@@ -1006,7 +1008,7 @@
         const safeName = player.name.replace(/'/g, "\\'");
         return `
           <button type="button" class="dropdown-item" onclick="selectPlayer('${safeName}')">
-            <span class="font-medium text-slate-100">${escapeHtml(player.name)}</span>
+            <span class="font-medium text-slate-900">${escapeHtml(player.name)}</span>
             <span class="text-xs uppercase tracking-[0.24em] text-slate-500">${escapeHtml(player.country)}</span>
           </button>
         `;
