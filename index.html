@@ -451,9 +451,8 @@ function getTodayIndex() {
   return Math.floor(new Date().getTime() / 86400000) % PLAYERS.length;
 }
 const SECRET = PLAYERS[getTodayIndex()];
-const DAY_NUM = Math.floor(new Date().getTime() / 86400000) % 9999;
 
-document.getElementById("dayBadge").textContent = "🏏 Cricket Hot & Cold #" + DAY_NUM;
+document.getElementById("dayBadge").textContent = "🏏 Cricket Hot & Cold";
 
 let guesses = [], won = false;
 
