@@ -12,6 +12,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "winbt1rzl5");
+  </script>
   <script>
     tailwind.config = {
       theme: {
@@ -176,6 +183,18 @@
         @apply rounded-2xl border border-club-gold/30 bg-[#FDF9F0] px-5 py-4 text-sm leading-6 text-club-charcoal;
       }
 
+      .how-card {
+        @apply rounded-2xl border border-[#D4C9B8] bg-white/75 p-5 shadow-card;
+      }
+
+      .how-step {
+        @apply flex items-start gap-3 text-sm leading-6 text-[#5F594F];
+      }
+
+      .how-step-number {
+        @apply mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-club-forest text-sm font-semibold text-white;
+      }
+
       .dropdown-panel {
         @apply absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 max-h-64 overflow-y-auto rounded-xl border border-[#E0D8C8] bg-white shadow-xl shadow-club-charcoal/10;
       }
@@ -220,6 +239,10 @@
 
       .secondary-button {
         @apply inline-flex items-center justify-center rounded-xl border border-[#D4C9B8] bg-white px-5 py-3 text-[0.95rem] font-medium text-club-charcoal transition-all hover:bg-[#FAF8F5] hover:border-club-gold focus:outline-none focus:ring-2 focus:ring-club-gold/30;
+      }
+
+      .starter-button {
+        @apply inline-flex items-center justify-center rounded-full border border-[#D4C9B8] bg-white px-3.5 py-2 text-xs font-semibold text-[#5F594F] transition-all hover:border-club-gold hover:bg-[#FDF9F0] focus:outline-none focus:ring-2 focus:ring-club-gold/30;
       }
 
       .eyebrow {
@@ -350,8 +373,26 @@
               Find today's cricketer.
             </h1>
             <p class="max-w-2xl text-[1.05rem] leading-7 text-[#6B655D]">
-              One name is hiding. Each guess brings you closer to the answer.
+              Guess any cricketer. The game tells you if your guess is cold or hot. Hotter means closer to the hidden player.
             </p>
+          </div>
+
+          <div class="how-card">
+            <div class="micro-kicker">How To Play</div>
+            <div class="mt-4 grid gap-3 sm:grid-cols-3">
+              <div class="how-step">
+                <span class="how-step-number">1</span>
+                <span>Type a cricketer name and press <strong>Guess</strong>.</span>
+              </div>
+              <div class="how-step">
+                <span class="how-step-number">2</span>
+                <span><strong>Cold</strong> is far. <strong>Hot</strong> is close.</span>
+              </div>
+              <div class="how-step">
+                <span class="how-step-number">3</span>
+                <span>Use each hint to narrow the country, role, era, and style.</span>
+              </div>
+            </div>
           </div>
 
           <div class="input-shell">
@@ -359,7 +400,7 @@
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div class="micro-kicker">Make A Guess</div>
-                  <div class="mt-1 text-[0.95rem] text-[#6B655D]" id="statusText">Take your first swing.</div>
+                  <div class="mt-1 text-[0.95rem] text-[#6B655D]" id="statusText">Start with a famous player you know.</div>
                 </div>
                 <div class="compact-note">Press Enter</div>
               </div>
@@ -386,9 +427,15 @@
                 <button id="guessBtn" class="primary-button sm:min-w-36" onclick="makeGuess()">Guess</button>
               </div>
               <div class="mt-4 hint-shell" id="hintBox">
-                <strong>Hint:</strong> An international cricketer is hiding here.
+                <strong>Hint:</strong> Start with any international cricketer. The heat score compares your guess with the hidden player.
               </div>
-              <p class="mt-3 text-xs text-[#9A948A]">Type at least 2 letters for suggestions.</p>
+              <div class="mt-4 flex flex-wrap items-center gap-2">
+                <span class="text-xs font-semibold uppercase tracking-[0.2em] text-[#9A948A]">Try</span>
+                <button type="button" class="starter-button" onclick="quickGuess('Virat Kohli')">Virat Kohli</button>
+                <button type="button" class="starter-button" onclick="quickGuess('Babar Azam')">Babar Azam</button>
+                <button type="button" class="starter-button" onclick="quickGuess('Pat Cummins')">Pat Cummins</button>
+              </div>
+              <p class="mt-3 text-xs text-[#9A948A]">Type at least 2 letters for suggestions. Pick a suggestion, then guess.</p>
             </div>
           </div>
 
@@ -417,7 +464,7 @@
                   <div class="text-5xl leading-none" id="tempDisplay" style="color: #E0D8C8;">—</div>
                   <div>
                     <div class="temp-label text-[2rem] font-semibold text-club-charcoal leading-tight" id="tempLabel">Ready</div>
-                    <div class="mt-1 text-sm text-[#8B8178]">Follow the heat trail.</div>
+                    <div class="mt-1 text-sm text-[#8B8178]">Hotter means closer.</div>
                   </div>
                 </div>
               </div>
@@ -442,11 +489,10 @@
           <div class="guide-card">
             <div class="micro-kicker">Signals</div>
             <div class="mt-4 flex flex-wrap gap-2">
-              <span class="info-chip">Country</span>
-              <span class="info-chip">Role</span>
-              <span class="info-chip">Era</span>
-              <span class="info-chip">Batting</span>
-              <span class="info-chip">Format</span>
+              <span class="info-chip">Same Country = Hotter</span>
+              <span class="info-chip">Same Role = Hotter</span>
+              <span class="info-chip">Same Era = Hotter</span>
+              <span class="info-chip">Same Batting = Warmer</span>
             </div>
           </div>
         </aside>
@@ -459,9 +505,9 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Temperature Rail</div>
-              <h2 class="title-display mt-2 text-2xl font-semibold text-club-charcoal">Follow the heat.</h2>
+              <h2 class="title-display mt-2 text-2xl font-semibold text-club-charcoal">Cold to hot.</h2>
             </div>
-            <div class="compact-note">🧊 to 🔥</div>
+            <div class="compact-note">Far to close</div>
           </div>
 
           <div class="mt-6 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
@@ -528,7 +574,7 @@
               </svg>
             </div>
             <p class="empty-state-text">Start with any international cricketer.</p>
-            <p class="mt-2 text-xs text-[#B5AFA7]">Type a name to begin the hunt.</p>
+            <p class="mt-2 text-xs text-[#B5AFA7]">Your guess will appear here with a heat score.</p>
           </div>
           <div id="guessList" class="mt-6 space-y-3"></div>
           <div id="winBox" class="mt-6"></div>
@@ -541,15 +587,15 @@
           <div class="mt-4 space-y-3">
             <div class="quick-tip">
               <span class="quick-tip-badge">1</span>
-              <span>Start broad to gauge the heat.</span>
+              <span>Start with any player you know.</span>
             </div>
             <div class="quick-tip">
               <span class="quick-tip-badge">2</span>
-              <span>Follow warmer guesses.</span>
+              <span>If it is hot, guess similar players.</span>
             </div>
             <div class="quick-tip">
               <span class="quick-tip-badge">3</span>
-              <span>New hint every 3 guesses.</span>
+              <span>A new hint appears every 3 guesses.</span>
             </div>
           </div>
         </section>
@@ -969,7 +1015,7 @@
 
     function updateHint() {
       const hints = [
-        "An international cricketer is hiding here.",
+        "Start with any international cricketer. The heat score compares your guess with the hidden player.",
         `Country: <strong>${SECRET.country}</strong>.`,
         `Role: <strong>${SECRET.role}</strong>.`,
         `Era: <strong>${SECRET.era === "legend" ? "Legend" : "Modern"}</strong>.`,
@@ -1064,7 +1110,7 @@
       document.getElementById("guessCount").textContent = guessCount;
       document.getElementById("bestScore").textContent = best === null ? "—" : `${best}%`;
       document.getElementById("sideBestScore").textContent = best === null ? "—" : `${best}%`;
-      document.getElementById("statusText").textContent = latest ? getStatusCopy(latestScore) : "Take your first swing.";
+      document.getElementById("statusText").textContent = latest ? getStatusCopy(latestScore) : "Start with a famous player you know.";
       document.getElementById("latestGuessMeta").textContent = latest
         ? `${latest.name} · ${latest.isCorrect ? "100%" : `${latest.sim}%`} ${latest.isCorrect ? "Solved" : getTempLabel(latest.sim)}`
         : "No guesses yet.";
@@ -1131,6 +1177,13 @@
       guessInput.value = name;
       dropdown.classList.add("hidden");
       guessInput.focus();
+    }
+
+    function quickGuess(name) {
+      if (won) return;
+      guessInput.value = name;
+      dropdown.classList.add("hidden");
+      makeGuess();
     }
 
     document.addEventListener("click", (event) => {
