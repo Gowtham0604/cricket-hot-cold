@@ -8,6 +8,9 @@
     name="description"
     content="Daily cricket guessing game. Guess the secret international cricketer and get hotter or colder with each try."
   />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -18,12 +21,20 @@
               cream: "#f7f3ea",
               parchment: "#fbf8f2",
               ink: "#17212f",
-              forest: "#1d4d42",
-              gold: "#c6922d"
+              forest: "#0D3B2E",
+              gold: "#C9A84C",
+              goldlight: "#E8D5A3",
+              charcoal: "#1C1917"
             }
           },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            body: ['Outfit', 'system-ui', 'sans-serif']
+          },
           boxShadow: {
-            panel: "0 28px 90px rgba(119, 95, 43, 0.12)"
+            panel: "0 20px 60px rgba(13, 59, 46, 0.08)",
+            card: "0 8px 24px rgba(28, 25, 23, 0.06)",
+            button: "0 4px 16px rgba(201, 168, 76, 0.25)"
           }
         }
       }
@@ -32,8 +43,9 @@
   <style type="text/tailwindcss">
     @layer base {
       :root {
-        --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-        --font-body: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        --color-gold: #C9A84C;
+        --color-forest: #0D3B2E;
+        --color-cream: #F7F3EA;
       }
 
       html {
@@ -45,17 +57,16 @@
       }
 
       body {
-        @apply min-h-screen bg-club-cream text-slate-900 antialiased selection:bg-amber-200 selection:text-slate-950;
-        font-family: var(--font-body);
+        @apply min-h-screen bg-[#F7F3EA] text-club-charcoal antialiased;
+        font-family: 'Outfit', system-ui, sans-serif;
         background-image:
-          radial-gradient(circle at top, rgba(29, 78, 66, 0.09), transparent 30%),
-          radial-gradient(circle at 14% 18%, rgba(198, 146, 45, 0.12), transparent 24%),
-          radial-gradient(circle at 85% 12%, rgba(56, 189, 248, 0.08), transparent 18%),
-          linear-gradient(180deg, #fcfaf5 0%, #f7f3ea 38%, #f4efe3 100%);
+          radial-gradient(ellipse at top, rgba(13, 59, 46, 0.06) 0%, transparent 50%),
+          radial-gradient(ellipse at 30% 5%, rgba(201, 168, 76, 0.08) 0%, transparent 40%),
+          linear-gradient(180deg, #FDFCFA 0%, #F7F3EA 60%, #F2EDE4 100%);
       }
 
       strong {
-        @apply font-semibold text-emerald-950;
+        @apply font-semibold text-club-forest;
       }
 
       #winBox:empty {
@@ -68,32 +79,27 @@
         inset: 0;
         pointer-events: none;
         background:
-          radial-gradient(circle at 50% -8%, rgba(255, 255, 255, 0.82), transparent 18%),
-          radial-gradient(circle at 15% 12%, rgba(29, 78, 66, 0.05), transparent 22%),
-          radial-gradient(circle at 84% 16%, rgba(198, 146, 45, 0.08), transparent 18%);
+          radial-gradient(ellipse at 50% -5%, rgba(255, 255, 255, 0.7) 0%, transparent 30%);
       }
 
       body::after {
         content: "";
         position: fixed;
         left: 50%;
-        bottom: -18rem;
-        width: min(94rem, 160vw);
-        height: 38rem;
+        bottom: -15rem;
+        width: min(80rem, 140vw);
+        height: 30rem;
         transform: translateX(-50%);
         pointer-events: none;
-        border-radius: 9999px;
-        background:
-          radial-gradient(circle at 50% 20%, rgba(34, 197, 94, 0.14), transparent 46%),
-          linear-gradient(180deg, rgba(34, 197, 94, 0), rgba(198, 146, 45, 0.08));
-        filter: blur(36px);
-        opacity: 0.5;
+        border-radius: 50%;
+        background: radial-gradient(ellipse at 50% 40%, rgba(13, 59, 46, 0.05) 0%, transparent 60%);
+        filter: blur(40px);
       }
     }
 
     @layer components {
       .hero-shell {
-        @apply relative overflow-hidden rounded-[2rem] border border-stone-200 bg-white/80 px-5 py-6 shadow-panel backdrop-blur-2xl sm:px-8 sm:py-8;
+        @apply relative overflow-hidden rounded-3xl border border-[#E8E2D6] bg-white/60 px-6 py-8 shadow-panel backdrop-blur-xl;
       }
 
       .hero-shell::before {
@@ -101,41 +107,33 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        background:
-          radial-gradient(circle at 80% 18%, rgba(198, 146, 45, 0.16), transparent 22%),
-          linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent 38%);
+        background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%);
+        border-radius: inherit;
       }
 
       .hero-crest {
-        @apply relative overflow-hidden rounded-[1.75rem] border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/70 to-amber-50 p-5;
+        @apply relative overflow-hidden rounded-2xl border border-[#D4C9B8] bg-gradient-to-br from-white via-[#FAF8F5] to-[#F5F0E8] p-6;
       }
 
       .hero-crest::before {
         content: "";
         position: absolute;
-        inset: 1rem;
-        border-radius: 9999px;
-        border: 1px solid rgba(29, 78, 66, 0.10);
-      }
-
-      .hero-crest::after {
-        content: "";
-        position: absolute;
+        top: 50%;
         left: 50%;
-        bottom: -5rem;
-        width: 18rem;
-        height: 18rem;
-        transform: translateX(-50%);
-        border-radius: 9999px;
-        border: 1px solid rgba(198, 146, 45, 0.16);
+        transform: translate(-50%, -50%);
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 1px solid rgba(201, 168, 76, 0.2);
+        opacity: 0.5;
       }
 
       .section-band {
-        @apply border-t border-stone-200 py-6;
+        @apply border-t border-[#E8E2D6] py-6;
       }
 
       .metric-segment {
-        @apply border-stone-200 px-0 py-3 md:px-5;
+        @apply border-[#E8E2D6] py-4 px-0 md:px-5;
       }
 
       .metric-segment + .metric-segment {
@@ -143,7 +141,7 @@
       }
 
       .input-shell {
-        @apply relative overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white/90 p-4 shadow-2xl shadow-amber-900/10;
+        @apply relative overflow-hidden rounded-2xl border border-[#E0D8C8] bg-white p-4 shadow-card;
       }
 
       .input-shell::before {
@@ -151,181 +149,204 @@
         position: absolute;
         inset: 0;
         pointer-events: none;
-        background: linear-gradient(90deg, rgba(198, 146, 45, 0.10), transparent 32%, rgba(29, 78, 66, 0.06));
+        background: linear-gradient(90deg, rgba(201, 168, 76, 0.05) 0%, transparent 40%, rgba(13, 59, 46, 0.03) 100%);
       }
 
-      .scale-item {
-        @apply flex h-14 w-full items-center justify-center rounded-2xl border border-stone-200 bg-white/70 text-xl opacity-45 transition duration-300;
+      .temp-indicator {
+        @apply flex h-16 w-full items-center justify-center rounded-xl border border-[#E0D8C8] bg-white/50 text-base font-medium transition-all duration-300;
       }
 
-      .scale-item.active {
-        @apply scale-[1.02] border-amber-500/60 bg-amber-50 opacity-100 shadow-lg shadow-amber-500/15;
+      .temp-indicator.active {
+        @apply scale-[1.02] border-club-gold bg-gradient-to-br from-club-goldlight/30 to-club-gold/10 shadow-button;
+      }
+
+      .temp-indicator-inner {
+        @apply h-3 w-full mx-2 rounded-full overflow-hidden bg-[#E8E2D6];
+      }
+
+      .temp-indicator-inner-bar {
+        @apply h-full rounded-full transition-all duration-500;
       }
 
       .hint-shell {
-        @apply rounded-[1.5rem] border border-amber-300/60 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-950;
+        @apply rounded-2xl border border-club-gold/30 bg-[#FDF9F0] px-5 py-4 text-sm leading-6 text-club-charcoal;
       }
 
       .dropdown-panel {
-        @apply absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 max-h-72 overflow-y-auto rounded-2xl border border-stone-200 bg-white/95 shadow-2xl shadow-stone-900/10 backdrop-blur-xl;
+        @apply absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 max-h-64 overflow-y-auto rounded-xl border border-[#E0D8C8] bg-white shadow-xl shadow-club-charcoal/10;
       }
 
       .dropdown-item {
-        @apply flex w-full items-center justify-between gap-4 border-b border-stone-100 px-4 py-3 text-left transition hover:bg-amber-50;
+        @apply flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-all hover:bg-[#FDF9F0] cursor-pointer;
+      }
+
+      .dropdown-item:hover {
+        @apply border-l-2 border-club-gold;
       }
 
       .dropdown-item:last-child {
         @apply border-b-0;
       }
 
+      .dropdown-item-name {
+        @apply font-medium text-club-charcoal text-[0.95rem];
+      }
+
+      .dropdown-item-country {
+        @apply text-xs font-medium uppercase tracking-wider text-[#8B8178];
+      }
+
       .guess-row {
-        @apply flex items-center gap-4 rounded-[1.5rem] border bg-white/80 px-4 py-4 shadow-lg shadow-stone-900/5;
-        animation: rise-in 220ms ease;
+        @apply flex items-center gap-4 rounded-2xl border bg-white/80 px-4 py-4 shadow-card;
+        animation: rise-in 250ms ease-out;
       }
 
-      .guess-tier-0 {
-        @apply border-sky-200 bg-sky-50;
-      }
-
-      .guess-tier-1 {
-        @apply border-cyan-200 bg-cyan-50;
-      }
-
-      .guess-tier-2 {
-        @apply border-teal-200 bg-teal-50;
-      }
-
-      .guess-tier-3 {
-        @apply border-amber-200 bg-amber-50;
-      }
-
-      .guess-tier-4 {
-        @apply border-orange-200 bg-orange-50;
-      }
-
-      .guess-tier-5 {
-        @apply border-rose-200 bg-rose-50;
-      }
-
-      .guess-tier-6 {
-        @apply border-violet-200 bg-violet-50;
-      }
-
-      .guess-tier-win {
-        @apply border-emerald-300 bg-emerald-50;
-      }
+      .guess-tier-0 { @apply border-[#D1D5DB] bg-[#F3F4F6]; }
+      .guess-tier-1 { @apply border-[#BFDBFE] bg-[#EFF6FF]; }
+      .guess-tier-2 { @apply border-[#99F6E4] bg-[#F0FDFA]; }
+      .guess-tier-3 { @apply border-club-goldlight bg-[#FDF9F0]; }
+      .guess-tier-4 { @apply border-[#FED7AA] bg-[#FFFBEB]; }
+      .guess-tier-5 { @apply border-[#FECACA] bg-[#FEF2F2]; }
+      .guess-tier-6 { @apply border-[#E9D5FF] bg-[#FAF5FF]; }
+      .guess-tier-win { @apply border-club-gold bg-gradient-to-br from-[#FDF9F0] to-white; }
 
       .primary-button {
-        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-amber-300 bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 px-5 py-3 text-sm font-semibold text-stone-950 shadow-lg shadow-amber-500/15 transition hover:scale-[1.01] hover:shadow-xl hover:shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-300 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
+        @apply inline-flex items-center justify-center rounded-xl border-0 bg-gradient-to-r from-club-gold via-[#D4B25A] to-club-gold px-6 py-3.5 text-[0.95rem] font-semibold text-club-charcoal shadow-button transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-club-gold/30 focus:outline-none focus:ring-2 focus:ring-club-gold/50 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100;
       }
 
       .secondary-button {
-        @apply inline-flex items-center justify-center rounded-[1.1rem] border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-200;
+        @apply inline-flex items-center justify-center rounded-xl border border-[#D4C9B8] bg-white px-5 py-3 text-[0.95rem] font-medium text-club-charcoal transition-all hover:bg-[#FAF8F5] hover:border-club-gold focus:outline-none focus:ring-2 focus:ring-club-gold/30;
       }
 
       .eyebrow {
-        @apply text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-emerald-700;
+        @apply text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-club-forest;
       }
 
       .info-chip {
-        @apply rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-slate-700;
+        @apply rounded-full border border-[#E0D8C8] bg-[#FAF8F5] px-3 py-1.5 text-xs font-medium text-[#6B655D];
       }
 
       .side-rule {
-        @apply flex items-start justify-between gap-4 border-t border-stone-200 py-4;
+        @apply flex items-start justify-between gap-4 border-t border-[#E8E2D6] py-4;
       }
 
-      .side-rule:first-child {
-        @apply border-t-0 pt-0;
-      }
+      .side-rule:first-child { @apply border-t-0 pt-0; }
 
       .micro-kicker {
-        @apply text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-slate-500;
+        @apply text-[0.7rem] font-medium uppercase tracking-[0.25em] text-[#8B8178];
       }
 
       .title-display {
-        font-family: var(--font-display);
+        font-family: 'Fraunces', Georgia, serif;
       }
 
       .score-card {
-        @apply rounded-[1.5rem] border border-white/70 bg-white/70 p-4 shadow-lg shadow-stone-900/5 backdrop-blur;
+        @apply rounded-2xl border border-[#E8E2D6] bg-white/60 p-4 shadow-card backdrop-blur-sm;
       }
 
       .board-shell {
-        @apply rounded-[1.75rem] border border-stone-200 bg-white/80 p-5 shadow-panel backdrop-blur-2xl sm:p-6;
+        @apply rounded-2xl border border-[#E8E2D6] bg-white/60 p-6 shadow-panel backdrop-blur-xl;
       }
 
       .guide-card {
-        @apply rounded-[1.5rem] border border-stone-200 bg-white/70 p-5 shadow-lg shadow-stone-900/5 backdrop-blur;
+        @apply rounded-2xl border border-[#E8E2D6] bg-white/60 p-5 shadow-card backdrop-blur-sm;
       }
 
       .compact-note {
-        @apply text-xs font-semibold uppercase tracking-[0.24em] text-slate-500;
+        @apply text-xs font-medium uppercase tracking-[0.2em] text-[#9A948A];
       }
 
       .quick-tip {
-        @apply flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3 text-sm text-slate-700;
+        @apply flex items-center gap-3 rounded-xl border border-[#E8E2D6] bg-white/50 px-4 py-3 text-sm text-[#6B655D];
       }
 
       .quick-tip-badge {
-        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-900 text-xs font-semibold text-white;
+        @apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-club-forest text-xs font-semibold text-white;
+      }
+
+      .number-display {
+        @apply text-4xl font-semibold text-club-charcoal tracking-tight;
+      }
+
+      .empty-state {
+        @apply flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#D4C9B8] bg-[#FAF8F5]/50 px-6 py-12 text-center;
+      }
+
+      .empty-state-icon {
+        @apply mb-4 rounded-full bg-[#F5F0E8] p-4;
+      }
+
+      .empty-state-text {
+        @apply text-[0.95rem] text-[#8B8178];
+      }
+
+      .win-card {
+        @apply overflow-hidden rounded-2xl border border-club-gold/40 bg-gradient-to-br from-white via-[#FAF8F5] to-[#FDF9F0] p-6 shadow-xl;
+      }
+
+      .temp-label {
+        font-family: 'Fraunces', Georgia, serif;
       }
     }
 
     @layer utilities {
       .glass-grid {
         background-image:
-          linear-gradient(rgba(22, 36, 53, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(22, 36, 53, 0.05) 1px, transparent 1px);
-        background-size: 36px 36px;
+          linear-gradient(rgba(13, 59, 46, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(13, 59, 46, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
         background-position: -1px -1px;
-      }
-
-      .field-lines {
-        background:
-          radial-gradient(circle at 50% 55%, rgba(29, 78, 66, 0.08) 0, rgba(29, 78, 66, 0.08) 1px, transparent 1px),
-          radial-gradient(circle at 50% 58%, transparent 0 6rem, rgba(29, 78, 66, 0.08) 6rem, rgba(29, 78, 66, 0.08) 6.08rem, transparent 6.08rem),
-          radial-gradient(circle at 50% 58%, transparent 0 11rem, rgba(198, 146, 45, 0.08) 11rem, rgba(198, 146, 45, 0.08) 11.08rem, transparent 11.08rem);
       }
     }
 
     @keyframes rise-in {
       from {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: translateY(-10px);
       }
-
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
+
+    @keyframes pulse-gold {
+      0%, 100% { box-shadow: 0 4px 16px rgba(201, 168, 76, 0.25); }
+      50% { box-shadow: 0 4px 24px rgba(201, 168, 76, 0.4); }
+    }
+
+    .scale-item-glow {
+      animation: pulse-gold 2s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
-  <main class="relative mx-auto min-h-screen w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-    <section class="hero-shell glass-grid field-lines">
-      <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_20rem] lg:gap-8">
-        <div class="space-y-6">
+  <main class="relative mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+    <section class="hero-shell glass-grid">
+      <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_20rem] lg:gap-10">
+        <div class="space-y-7">
           <div class="flex flex-wrap items-center gap-3">
             <div
               id="dayBadge"
-              class="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-700"
+              class="inline-flex items-center gap-2.5 rounded-full border border-[#E0D8C8] bg-white px-4 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-club-charcoal"
             >
-              <span>🏏</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
               <span>Cricket Hot &amp; Cold</span>
             </div>
-            <div class="info-chip">Daily board</div>
-            <div class="info-chip">One secret player</div>
+            <div class="info-chip">Daily Challenge</div>
+            <div class="info-chip">One Secret Player</div>
           </div>
 
           <div class="space-y-3">
             <p class="eyebrow">Daily Cricket Puzzle</p>
-            <h1 class="title-display max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-6xl">
-              Guess today&apos;s cricketer.
+            <h1 class="title-display max-w-4xl text-5xl font-semibold tracking-tight text-club-charcoal sm:text-6xl">
+              Find today's cricketer.
             </h1>
-            <p class="max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-              One name is hiding. The closer your read, the hotter the board gets.
+            <p class="max-w-2xl text-[1.05rem] leading-7 text-[#6B655D]">
+              One name is hiding. Each guess brings you closer to the answer.
             </p>
           </div>
 
@@ -334,13 +355,13 @@
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div class="micro-kicker">Make A Guess</div>
-                  <div class="mt-1 text-sm text-slate-700" id="statusText">Take your first swing.</div>
+                  <div class="mt-1 text-[0.95rem] text-[#6B655D]" id="statusText">Take your first swing.</div>
                 </div>
-                <div class="compact-note">Press enter</div>
+                <div class="compact-note">Press Enter</div>
               </div>
 
-              <div id="errMsg" class="mt-4 min-h-5 text-sm text-rose-700"></div>
-              <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+              <div id="errMsg" class="mt-4 min-h-5 text-sm text-[#DC2626]"></div>
+              <div class="mt-3 flex flex-col gap-3 sm:flex-row">
                 <div class="autocomplete relative flex-1">
                   <label for="guessInput" class="sr-only">Guess a cricketer</label>
                   <input
@@ -348,29 +369,34 @@
                     id="guessInput"
                     placeholder="Virat Kohli, Joe Root..."
                     autocomplete="off"
-                    class="w-full rounded-[1.1rem] border border-stone-200 bg-white px-4 py-4 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-200"
+                    class="w-full rounded-xl border border-[#E0D8C8] bg-white px-4 py-4 pr-11 text-[0.95rem] text-club-charcoal outline-none transition-all placeholder:text-[#9A948A] focus:border-club-gold focus:bg-white focus:ring-2 focus:ring-club-gold/20"
                   />
-                  <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">⌕</div>
+                  <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#9A948A]">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                  </div>
                   <div id="dropdown" class="dropdown-panel hidden"></div>
                 </div>
-                <button id="guessBtn" class="primary-button sm:min-w-40" onclick="makeGuess()">Guess</button>
+                <button id="guessBtn" class="primary-button sm:min-w-36" onclick="makeGuess()">Guess</button>
               </div>
-              <p class="mt-3 text-xs text-slate-500">Type two letters for autocomplete.</p>
+              <p class="mt-3 text-xs text-[#9A948A]">Type at least 2 letters for suggestions.</p>
             </div>
           </div>
 
           <div class="grid gap-3 sm:grid-cols-3">
             <div class="score-card">
-              <div class="micro-kicker">Guesses</div>
-              <div class="mt-2 text-4xl font-semibold text-slate-950" id="guessCount">0</div>
+              <div class="micro-kicker">Total Guesses</div>
+              <div class="number-display" id="guessCount">0</div>
             </div>
             <div class="score-card">
-              <div class="micro-kicker">Best Read</div>
-              <div class="mt-2 text-4xl font-semibold text-slate-950" id="bestScore">—</div>
+              <div class="micro-kicker">Best Match</div>
+              <div class="number-display" id="bestScore">—</div>
             </div>
             <div class="score-card">
-              <div class="micro-kicker">Latest</div>
-              <div class="mt-2 text-sm leading-6 text-slate-600" id="latestGuessMeta">No guesses yet.</div>
+              <div class="micro-kicker">Latest Guess</div>
+              <div class="mt-2 text-sm leading-6 text-[#6B655D]" id="latestGuessMeta">No guesses yet.</div>
             </div>
           </div>
         </div>
@@ -380,27 +406,27 @@
             <div class="relative z-10 space-y-6">
               <div>
                 <div class="micro-kicker">Current Heat</div>
-                <div class="mt-3 flex items-end gap-3">
-                  <span class="text-5xl leading-none" id="tempDisplay">🧊</span>
+                <div class="mt-3 flex items-end gap-4">
+                  <div class="text-5xl leading-none" id="tempDisplay" style="color: #E0D8C8;">—</div>
                   <div>
-                    <div class="title-display text-3xl font-semibold text-slate-950" id="tempLabel">Freezing</div>
-                    <div class="mt-1 text-sm text-slate-500">Follow the warmer lane.</div>
+                    <div class="temp-label text-[2rem] font-semibold text-club-charcoal leading-tight" id="tempLabel">Ready</div>
+                    <div class="mt-1 text-sm text-[#8B8178]">Follow the heat trail.</div>
                   </div>
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
-                <div class="rounded-2xl border border-white/70 bg-white/70 p-4">
-                  <div class="compact-note">Hints</div>
-                  <div class="mt-2 text-2xl font-semibold text-slate-950" id="hintLevel">1 / 5</div>
+                <div class="rounded-xl border border-[#E8E2D6] bg-white/60 p-4">
+                  <div class="compact-note">Hints Unlocked</div>
+                  <div class="mt-2 text-2xl font-semibold text-club-charcoal" id="hintLevel">0 / 5</div>
                 </div>
-                <div class="rounded-2xl border border-white/70 bg-white/70 p-4">
-                  <div class="compact-note">Pool</div>
-                  <div class="mt-2 text-2xl font-semibold text-slate-950" id="playerPool">0</div>
+                <div class="rounded-xl border border-[#E8E2D6] bg-white/60 p-4">
+                  <div class="compact-note">Player Pool</div>
+                  <div class="mt-2 text-2xl font-semibold text-club-charcoal" id="playerPool">0</div>
                 </div>
-                <div class="rounded-2xl border border-white/70 bg-white/70 p-4 col-span-2">
-                  <div class="compact-note">Top Score</div>
-                  <div class="mt-2 text-2xl font-semibold text-slate-950" id="sideBestScore">—</div>
+                <div class="col-span-2 rounded-xl border border-[#E8E2D6] bg-white/60 p-4">
+                  <div class="compact-note">Best Score</div>
+                  <div class="mt-2 text-2xl font-semibold text-club-charcoal" id="sideBestScore">—</div>
                 </div>
               </div>
             </div>
@@ -426,33 +452,54 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Temperature Rail</div>
-              <h2 class="title-display mt-2 text-3xl font-semibold text-slate-950">Read the heat.</h2>
+              <h2 class="title-display mt-2 text-2xl font-semibold text-club-charcoal">Follow the heat.</h2>
             </div>
-            <div class="compact-note">0 to 100</div>
+            <div class="compact-note">0% to 100%</div>
           </div>
 
-          <div class="mt-5 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
-            <span class="scale-item" title="Freezing">🧊</span>
-            <span class="scale-item" title="Cold">🌬️</span>
-            <span class="scale-item" title="Cool">💧</span>
-            <span class="scale-item" title="Warm">☀️</span>
-            <span class="scale-item" title="Hot">🌶️</span>
-            <span class="scale-item" title="Burning">🔥</span>
-            <span class="scale-item" title="Volcanic">🌋</span>
+          <div class="mt-6 grid grid-cols-7 gap-2 sm:gap-3" id="tempScale">
+            <div class="temp-indicator" data-temp="0">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #0D3B2E, #3B82F6); width: 15%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">0%</span>
+            </div>
+            <div class="temp-indicator" data-temp="1">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #3B82F6, #06B6D4); width: 30%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">20%</span>
+            </div>
+            <div class="temp-indicator" data-temp="2">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #06B6D4, #10B981); width: 45%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">35%</span>
+            </div>
+            <div class="temp-indicator" data-temp="3">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #10B981, #C9A84C); width: 60%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">50%</span>
+            </div>
+            <div class="temp-indicator" data-temp="4">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #C9A84C, #F59E0B); width: 80%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">65%</span>
+            </div>
+            <div class="temp-indicator" data-temp="5">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #F59E0B, #EF4444); width: 92%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">80%</span>
+            </div>
+            <div class="temp-indicator" data-temp="6">
+              <div class="temp-indicator-inner"><div class="temp-indicator-inner-bar" style="background: linear-gradient(90deg, #EF4444, #991B1B); width: 100%;"></div></div>
+              <span class="text-[0.65rem] mt-1 text-[#9A948A]">100%</span>
+            </div>
           </div>
 
-          <div class="mt-5 overflow-hidden rounded-full bg-stone-200/70">
+          <div class="mt-6 overflow-hidden rounded-full bg-[#E8E2D6]/50">
             <div
               id="heatBar"
-              class="h-3 w-0 rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-orange-500 transition-all duration-500"
+              class="h-3.5 w-0 rounded-full bg-gradient-to-r from-club-forest via-club-gold to-[#EF4444] transition-all duration-500"
             ></div>
           </div>
-          <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
-            <span>0%</span>
-            <span>100%</span>
+          <div class="mt-2 flex items-center justify-between text-xs text-[#9A948A]">
+            <span>Cold</span>
+            <span>Hot</span>
           </div>
 
-          <div class="mt-5 hint-shell" id="hintBox">
+          <div class="mt-6 hint-shell" id="hintBox">
             <strong>Hint:</strong> An international cricketer is hiding here.
           </div>
         </section>
@@ -461,16 +508,23 @@
           <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div class="eyebrow">Guess Board</div>
-              <h2 class="title-display mt-2 text-3xl font-semibold text-slate-950">Guess history.</h2>
+              <h2 class="title-display mt-2 text-2xl font-semibold text-club-charcoal">Your guesses.</h2>
             </div>
             <div class="compact-note">Hottest first</div>
           </div>
 
           <div
             id="emptyState"
-            class="mt-6 rounded-[1.5rem] border border-dashed border-stone-300 bg-white/60 px-6 py-12 text-center text-sm text-slate-500"
+            class="empty-state"
           >
-            Start with any international cricketer.
+            <div class="empty-state-icon">
+              <svg class="w-10 h-10 text-club-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6M12 16v.01"/>
+              </svg>
+            </div>
+            <p class="empty-state-text">Start with any international cricketer.</p>
+            <p class="mt-2 text-xs text-[#B5AFA7]">Type a name to begin the hunt.</p>
           </div>
           <div id="guessList" class="mt-6 space-y-3"></div>
           <div id="winBox" class="mt-6"></div>
@@ -479,41 +533,41 @@
 
       <aside class="space-y-4">
         <section class="guide-card">
-          <div class="eyebrow">Play Fast</div>
+          <div class="eyebrow">Quick Guide</div>
           <div class="mt-4 space-y-3">
             <div class="quick-tip">
               <span class="quick-tip-badge">1</span>
-              <span>Start broad.</span>
+              <span>Start broad to gauge the heat.</span>
             </div>
             <div class="quick-tip">
               <span class="quick-tip-badge">2</span>
-              <span>Follow the heat.</span>
+              <span>Follow warmer guesses.</span>
             </div>
             <div class="quick-tip">
               <span class="quick-tip-badge">3</span>
-              <span>Clue every three.</span>
+              <span>New hint every 3 guesses.</span>
             </div>
           </div>
         </section>
 
         <section class="guide-card">
-          <div class="eyebrow">Board Notes</div>
-          <div class="mt-4 space-y-3 text-sm text-slate-600">
+          <div class="eyebrow">Game Notes</div>
+          <div class="mt-4 space-y-3 text-sm text-[#6B655D]">
             <div class="quick-tip">
-              <span class="quick-tip-badge">D</span>
-              <span>New board daily.</span>
+              <span class="quick-tip-badge" style="background: #C9A84C;">D</span>
+              <span>New puzzle each day.</span>
             </div>
             <div class="quick-tip">
-              <span class="quick-tip-badge">S</span>
-              <span>Progress saves here.</span>
+              <span class="quick-tip-badge" style="background: #C9A84C;">S</span>
+              <span>Progress saves automatically.</span>
             </div>
           </div>
         </section>
       </aside>
     </div>
 
-    <footer class="mt-6 pb-2 text-center text-xs text-slate-500">
-      New board daily.
+    <footer class="mt-10 pb-4 text-center text-sm text-[#9A948A]">
+      New puzzle available daily at midnight.
     </footer>
   </main>
 
@@ -671,7 +725,6 @@
       {name:"Gerhard Erasmus",country:"Namibia",role:"Batter",era:"modern",format:"all",batting:"right",runs:2000,wickets:0},
       {name:"David Wiese",country:"Namibia",role:"All-rounder",era:"modern",format:"all",batting:"right",runs:1000,wickets:100},
       {name:"Kyle Coetzer",country:"Scotland",role:"Batter",era:"modern",format:"all",batting:"right",runs:3000,wickets:0},
-      {name:"Rashid Khan",country:"Afghanistan",role:"Bowler",era:"modern",format:"all",batting:"right",runs:1000,wickets:500},
       {name:"Sandeep Lamichhane",country:"Nepal",role:"Bowler",era:"modern",format:"all",batting:"right",runs:200,wickets:200},
       {name:"Rohit Paudel",country:"Nepal",role:"Batter",era:"modern",format:"t20",batting:"right",runs:1000,wickets:0},
       {name:"Monank Patel",country:"USA",role:"Keeper-Batter",era:"modern",format:"t20",batting:"right",runs:500,wickets:0},
@@ -688,9 +741,18 @@
       return true;
     });
 
-    const EMOJIS = ["🧊", "🌬️", "💧", "☀️", "🌶️", "🔥", "🌋"];
-    const TRAIL_EMOJIS = ["⬛", "🟦", "🟦", "🟨", "🟨", "🟧", "🟥"];
-    const HEAT_LABELS = ["Freezing", "Cold", "Cool", "Warm", "Hot", "Burning", "Volcanic"];
+    const TEMP_COLORS = [
+      "linear-gradient(90deg, #0D3B2E, #3B82F6)",
+      "linear-gradient(90deg, #3B82F6, #06B6D4)",
+      "linear-gradient(90deg, #06B6D4, #10B981)",
+      "linear-gradient(90deg, #10B981, #C9A84C)",
+      "linear-gradient(90deg, #C9A84C, #F59E0B)",
+      "linear-gradient(90deg, #F59E0B, #EF4444)",
+      "linear-gradient(90deg, #EF4444, #991B1B)"
+    ];
+
+    const TEMP_LABELS = ["Cold", "Chilly", "Cool", "Warm", "Hot", "Very Hot", "Scorching"];
+    const TRAIL_INDICATORS = ["🔵", "🟦", "🟦", "🟨", "🟨", "🟧", "🟥"];
 
     function getTodayIndex() {
       return Math.floor(new Date().getTime() / 86400000) % PLAYERS.length;
@@ -706,7 +768,12 @@
     const guessBtn = document.getElementById("guessBtn");
     const dropdown = document.getElementById("dropdown");
 
-    dayBadge.innerHTML = `<span>🏏</span><span>Cricket Hot &amp; Cold #${DAY_NUM}</span>`;
+    dayBadge.innerHTML = `
+      <svg class="w-4 h-4 text-club-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      <span>Cricket Hot &amp; Cold #${DAY_NUM}</span>
+    `;
     document.getElementById("playerPool").textContent = PLAYERS.length;
 
     let guesses = [];
@@ -754,8 +821,8 @@
         .replace(/'/g, "&#39;");
     }
 
-    function getHeatLabel(score) {
-      return HEAT_LABELS[getEmojiIdx(score)];
+    function getTempLabel(score) {
+      return TEMP_LABELS[getEmojiIdx(score)];
     }
 
     function getStatusCopy(score) {
@@ -771,7 +838,7 @@
     function setSolvedState() {
       guessInput.disabled = won;
       guessBtn.disabled = won;
-      guessBtn.textContent = won ? "Solved" : "Guess";
+      guessBtn.textContent = won ? "Solved!" : "Guess";
       guessInput.placeholder = won ? "Puzzle solved." : "Virat Kohli, Joe Root...";
     }
 
@@ -783,9 +850,7 @@
           guesses: guesses.map((guess) => guess.name),
           won,
         }));
-      } catch (error) {
-        // Storage can be blocked in private browsing or stricter environments.
-      }
+      } catch (error) {}
     }
 
     function loadGame() {
@@ -862,28 +927,37 @@
     function renderGuess(guess) {
       const emojiIndex = guess.isCorrect ? 6 : getEmojiIdx(guess.sim);
       const tierClass = guess.isCorrect ? "guess-tier-win" : `guess-tier-${emojiIndex}`;
-      const label = guess.isCorrect ? "Solved" : getHeatLabel(guess.sim);
+      const label = guess.isCorrect ? "Solved" : getTempLabel(guess.sim);
+
+      const indicatorColor = TEMP_COLORS[emojiIndex];
 
       return `
         <div class="guess-row ${tierClass}">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-stone-200 bg-white/75 text-2xl">
-            ${guess.isCorrect ? "✅" : EMOJIS[emojiIndex]}
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#E0D8C8] bg-white/75 text-2xl" style="background: linear-gradient(135deg, white, ${guess.isCorrect ? '#FDF9F0' : '#F8F6F2'});">
+            ${guess.isCorrect ? `
+              <svg class="w-6 h-6 text-club-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <path d="M22 4L12 14.01l-3-3"/>
+              </svg>
+            ` : `
+              <div class="w-6 h-6 rounded-full" style="background: ${TEMP_COLORS[emojiIndex].replace('linear-gradient', 'linear-gradient').split(',')[1] || '#6B655D'}"></div>
+            `}
           </div>
           <div class="min-w-0 flex-1">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <div class="truncate text-sm font-semibold text-slate-950 sm:text-base">${escapeHtml(guess.name)}</div>
-                <div class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">${escapeHtml(guess.country)}</div>
+                <div class="truncate text-sm font-semibold text-club-charcoal sm:text-base">${escapeHtml(guess.name)}</div>
+                <div class="mt-1 text-xs uppercase tracking-[0.2em] text-[#8B8178]">${escapeHtml(guess.country)}</div>
               </div>
-              <div class="shrink-0 rounded-full border border-white/80 bg-white/80 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-slate-600">${label}</div>
+              <div class="shrink-0 rounded-lg border border-[#E0D8C8] bg-white/80 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[#6B655D]">${label}</div>
             </div>
-            <div class="mt-3 h-2 overflow-hidden rounded-full bg-white/70">
-              <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 via-amber-400 to-orange-500" style="width:${guess.isCorrect ? 100 : guess.sim}%"></div>
+            <div class="mt-3 h-2 overflow-hidden rounded-full bg-[#E8E2D6]/50">
+              <div class="h-full rounded-full" style="background: ${indicatorColor}; width: ${guess.isCorrect ? 100 : guess.sim}%"></div>
             </div>
           </div>
           <div class="text-right">
-            <div class="text-lg font-semibold text-slate-950">${guess.isCorrect ? "100%" : `${guess.sim}%`}</div>
-            <div class="text-[0.7rem] uppercase tracking-[0.24em] text-slate-500">Match</div>
+            <div class="text-lg font-semibold text-club-charcoal">${guess.isCorrect ? "100%" : `${guess.sim}%`}</div>
+            <div class="text-[0.65rem] uppercase tracking-[0.2em] text-[#9A948A]">Match</div>
           </div>
         </div>
       `;
@@ -905,7 +979,7 @@
 
     function getTrail() {
       return guesses
-        .map((guess) => guess.isCorrect ? "🟩" : TRAIL_EMOJIS[getEmojiIdx(guess.sim)])
+        .map((guess) => guess.isCorrect ? "🟩" : TRAIL_INDICATORS[getEmojiIdx(guess.sim)])
         .reverse()
         .join("");
     }
@@ -913,22 +987,37 @@
     function showWin() {
       won = true;
       document.getElementById("winBox").innerHTML = `
-        <div class="overflow-hidden rounded-[1.75rem] border border-emerald-300 bg-gradient-to-br from-white via-emerald-50 to-amber-50 p-6 shadow-2xl shadow-amber-900/10">
+        <div class="win-card">
           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div class="micro-kicker text-emerald-700">Board Solved</div>
-              <div class="title-display mt-3 text-4xl font-semibold text-slate-950">${escapeHtml(SECRET.name)}</div>
-              <div class="mt-2 text-sm leading-7 text-slate-600">
+              <div class="micro-kicker text-club-forest">Puzzle Solved!</div>
+              <div class="title-display mt-3 text-4xl font-semibold text-club-charcoal">${escapeHtml(SECRET.name)}</div>
+              <div class="mt-2 text-[1.05rem] leading-7 text-[#6B655D]">
                 Solved in ${guesses.length} guess${guesses.length === 1 ? "" : "es"} • ${escapeHtml(SECRET.country)}
               </div>
             </div>
-            <div class="text-5xl">🏆</div>
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-club-gold to-[#B8963F] shadow-lg">
+              <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                <path d="M4 22h16"/>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+              </svg>
+            </div>
           </div>
-          <div class="mt-5 h-px bg-gradient-to-r from-transparent via-emerald-300/60 to-transparent"></div>
-          <div class="mt-5 break-all text-2xl tracking-[0.3em] text-slate-950">${getTrail()}</div>
-          <div class="mt-3 min-h-5 text-sm text-emerald-700" id="copiedMsg"></div>
+          <div class="mt-6 h-px bg-gradient-to-r from-transparent via-club-gold/40 to-transparent"></div>
+          <div class="mt-5 break-all text-2xl tracking-[0.3em] text-club-charcoal">${getTrail()}</div>
+          <div class="mt-3 min-h-5 text-sm text-club-forest" id="copiedMsg"></div>
           <div class="mt-5 flex flex-wrap gap-3">
-            <button class="secondary-button" onclick="shareResult()">Copy Result</button>
+            <button class="secondary-button" onclick="shareResult()">
+              <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy Result
+            </button>
           </div>
         </div>
       `;
@@ -941,20 +1030,45 @@
       const emojiIndex = latest ? getEmojiIdx(latest.sim) : 0;
       const latestScore = latest ? latest.sim : 0;
 
+      const tempDisplay = document.getElementById("tempDisplay");
+      const tempLabel = document.getElementById("tempLabel");
+
+      if (latest) {
+        if (latest.isCorrect) {
+          tempDisplay.innerHTML = `
+            <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#C9A84C"/>
+            </svg>
+          `;
+          tempLabel.textContent = "Solved!";
+        } else {
+          tempDisplay.innerHTML = `
+            <div class="w-10 h-10 rounded-full" style="background: ${TEMP_COLORS[emojiIndex]}; box-shadow: 0 4px 20px ${emojiIndex >= 4 ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.3)'}"></div>
+          `;
+          tempLabel.textContent = getTempLabel(latest.sim);
+        }
+      } else {
+        tempDisplay.innerHTML = `
+          <svg class="w-10 h-10 text-[#E0D8C8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6M12 16v.01"/>
+          </svg>
+        `;
+        tempLabel.textContent = "Ready";
+      }
+
       document.getElementById("guessCount").textContent = guessCount;
       document.getElementById("bestScore").textContent = best === null ? "—" : `${best}%`;
       document.getElementById("sideBestScore").textContent = best === null ? "—" : `${best}%`;
-      document.getElementById("tempDisplay").textContent = latest ? (latest.isCorrect ? "✅" : EMOJIS[emojiIndex]) : "🧊";
-      document.getElementById("tempLabel").textContent = latest ? (latest.isCorrect ? "Solved" : getHeatLabel(latest.sim)) : "Freezing";
       document.getElementById("statusText").textContent = latest ? getStatusCopy(latestScore) : "Take your first swing.";
       document.getElementById("latestGuessMeta").textContent = latest
-        ? `${latest.name} · ${latest.isCorrect ? "100%" : `${latest.sim}%`} ${latest.isCorrect ? "Solved" : getHeatLabel(latest.sim)}`
+        ? `${latest.name} · ${latest.isCorrect ? "100%" : `${latest.sim}%`} ${latest.isCorrect ? "Solved" : getTempLabel(latest.sim)}`
         : "No guesses yet.";
       document.getElementById("heatBar").style.width = `${latestScore}%`;
       document.getElementById("emptyState").classList.toggle("hidden", guessCount > 0);
       document.getElementById("guessList").innerHTML = guesses.map(renderGuess).join("");
 
-      document.querySelectorAll("#tempScale .scale-item").forEach((element, index) => {
+      document.querySelectorAll("#tempScale .temp-indicator").forEach((element, index) => {
         element.classList.toggle("active", Boolean(latest) && index === emojiIndex);
       });
 
@@ -966,12 +1080,12 @@
       const playUrl = window.location.protocol === "http:" || window.location.protocol === "https:"
         ? window.location.href
         : "local build";
-      const text = `🏏 Cricket Hot & Cold #${DAY_NUM}\nI guessed ${SECRET.name} in ${guesses.length} tries.\n${getTrail()}\nScale: ⬛🟦🟨🟧🟥🟩\nPlay at: ${playUrl}`;
+      const text = `🏏 Cricket Hot & Cold #${DAY_NUM}\nI guessed ${SECRET.name} in ${guesses.length} tries.\n${getTrail()}\nPlay at: ${playUrl}`;
 
       navigator.clipboard.writeText(text).then(() => {
         const copied = document.getElementById("copiedMsg");
         if (!copied) return;
-        copied.textContent = "Copied to clipboard.";
+        copied.textContent = "Copied to clipboard!";
         window.setTimeout(() => {
           if (copied) copied.textContent = "";
         }, 3000);
@@ -1000,8 +1114,8 @@
         const safeName = player.name.replace(/'/g, "\\'");
         return `
           <button type="button" class="dropdown-item" onclick="selectPlayer('${safeName}')">
-            <span class="font-medium text-slate-900">${escapeHtml(player.name)}</span>
-            <span class="text-xs uppercase tracking-[0.24em] text-slate-500">${escapeHtml(player.country)}</span>
+            <span class="dropdown-item-name">${escapeHtml(player.name)}</span>
+            <span class="dropdown-item-country">${escapeHtml(player.country)}</span>
           </button>
         `;
       }).join("");
